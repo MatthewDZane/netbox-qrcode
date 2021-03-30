@@ -51,8 +51,7 @@ class QRCode(PluginTemplateExtension):
             img = get_img_b64(qr_with_text)
             
             text_fields = config.get('text_fields', [])
-            file_path = '/opt/netbox/netbox/media/image-attachments/' + '{}'.format(getattr(obj, text_fields[0], 'default')) + '.png'
-            qr_with_text.save(file_path)
+            file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(getattr(obj, text_fields[0], 'default'))
         else:
             img = get_img_b64(qr_img)
         try:
