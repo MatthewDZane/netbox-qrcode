@@ -46,13 +46,14 @@ class QRCode(PluginTemplateExtension):
             if custom_text:
                 text.append(custom_text)
             text = '\n'.join(text)
-            text_img = get_qr_text(qr_img.size, text, config.get('font'))
+            text_img = get_qr_text(qr_img.size, text, 'ArialMT')
             qr_with_text = get_concat(qr_img, text_img)
             img = get_img_b64(qr_with_text)
             
             text_fields = config.get('text_fields', [])
-            file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(getattr(obj, text_fields[0], 'default')) + '.png'
+            file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(getattr(obj, text_fields[0], 'default'))
             qr_with_text.save(file_path)
+    
         else:
             img = get_img_b64(qr_img)
         try:
