@@ -10,7 +10,8 @@
         <strong>QR Code</strong>
     </div>
     <div>
-        <img src="data:image/png;base64,{{image}}" />
+        <img src="data:image/png;base64,{{image}}" /><br>
+        <a download="qr.png" href="data:image/png;base64,{{image}}">Download</a>
     </div>
     <div class="panel-footer text-right noprint">
         <button onclick="printImg('data:image/png;base64,{{image}}')" ; class="btn btn-xs btn-primary">
@@ -18,3 +19,4 @@
         </button>
     </div>
 </div>
+
