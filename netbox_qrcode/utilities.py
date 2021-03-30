@@ -28,7 +28,7 @@ def get_img_b64(img):
     return str(base64.b64encode(stream.getvalue()), encoding='ascii')
 
 
-def get_qr_text(size, text, font='TahomaBold'):
+def get_qr_text(size, text, font='ComicSansMSBold'):
     img = Image.new('L', size, 'white')
     font_size = 56
     flag = True
