@@ -55,7 +55,7 @@ class QRCode(PluginTemplateExtension):
             return self.render(
                 'netbox_qrcode/qrcode.html', extra_context={'image': img}
             )
-            open("qr.png", "wb") as fh:
+            open("/tmp/qr.png", "wb") as fh:
                 fh.write(base64.decodebytes(img))
         except ObjectDoesNotExist:
             return ''
