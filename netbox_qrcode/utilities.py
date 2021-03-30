@@ -35,11 +35,10 @@ def get_qr_text(size, text, font='ArialMT'):
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype('{}.ttf'.format(font), font_size)
+            fnt = ImageFont.truetype('fonts/{}.ttf'.format(font), font_size)
         except Exception:
             #fnt = ImageFont.load_default()
-            fnt = ImageFont.truetype("ArialBlack.ttf", 50)
-
+            fnt = ImageFont.truetype("fonts/ArialBlack.ttf", 50)
             flag = False
         draw = ImageDraw.Draw(img)
         w, h = draw.textsize(text, font=fnt)
