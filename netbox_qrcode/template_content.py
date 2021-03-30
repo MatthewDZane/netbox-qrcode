@@ -49,14 +49,14 @@ class QRCode(PluginTemplateExtension):
             text_img = get_qr_text(qr_img.size, text, config.get('font'))
             qr_with_text = get_concat(qr_img, text_img)
             img = get_img_b64(qr_with_text)
+            with open("/tmp/qr.png", "wb") as fh:
+                fh.write(base64.decodebytes(img))
         else:
             img = get_img_b64(qr_img)
         try:
             return self.render(
                 'netbox_qrcode/qrcode.html', extra_context={'image': img}
             )
-            with open("/tmp/qr.png", "wb") as fh:
-                fh.write(base64.decodebytes(img))
         except ObjectDoesNotExist:
             return ''
 
