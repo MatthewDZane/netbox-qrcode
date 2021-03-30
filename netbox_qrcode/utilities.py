@@ -30,12 +30,12 @@ def get_img_b64(img):
 
 def get_qr_text(size, text, font='ArialMT'):
     img = Image.new('L', size, 'white')
-    font_size = 56
+    font_size = 70
     flag = True
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype(file_path, font_size)
+            fnt = ImageFont.truetype('fonts/{}.ttf'.format(font), font_size)
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
