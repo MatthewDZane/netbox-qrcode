@@ -3,7 +3,6 @@ import qrcode
 
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
-import matplotlib.font_manager as fm # to create font
 
 from pkg_resources import resource_stream
 
