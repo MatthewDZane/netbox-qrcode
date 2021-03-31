@@ -3,6 +3,7 @@ import qrcode
 
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
+import matplotlib.font_manager as fm # to create font
 
 from pkg_resources import resource_stream
 
@@ -36,7 +37,7 @@ def get_qr_text(size, text, font='ArialMT'):
     while flag:
         #file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype('arial.ttf', font_size)
+            fnt = ImageFont.truetype(fm.findfont(fm.FontProperties(family='DejaVu Sans')),font_size)
             font_success = 'Success'
         except Exception:
             fnt = ImageFont.load_default()
