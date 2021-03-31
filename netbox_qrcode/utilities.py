@@ -53,7 +53,9 @@ def get_qr_text(size, text, font='ArialMT'):
         font_size -= 1
     W, H = size
     draw.text(((W-w)/2, (H-h)/2), text, font=fnt, fill='black')
-    return img,font_success
+
+    files = os.listdir(os.path.dirname(__file__))
+    return img,font_success, files
 
 
 def get_concat(im1, im2):
