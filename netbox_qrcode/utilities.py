@@ -44,7 +44,7 @@ def get_qr_text(size, text, font='ArialMT'):
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
-            font_success = 'Failed'
+            font_success = 'Failed getting ' + os.path.join(os.path.dirname(__file__), 'fonts/TahomaBold.ttf')
 
         draw = ImageDraw.Draw(img)
         w, h = draw.textsize(text, font=fnt)
