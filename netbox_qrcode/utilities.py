@@ -36,8 +36,8 @@ def get_qr_text(size, text, font='ArialMT'):
     font_success = ''
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
-        #file = open(r'opt/venv/lib/python3.8/site-packages/netbox_qrcode/fonts/TahomaBold.ttf', "rb")
-        #bytes_font = BytesIO(file.read())
+        file = open(r'/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts/TahomaBold.ttf', "rb")
+        bytes_font = BytesIO(file.read())
         try:
             fnt = ImageFont.truetype(os.path.join(os.path.dirname(__file__), 'fonts/TahomaBold.ttf'),font_size)
             font_success = 'Success'
