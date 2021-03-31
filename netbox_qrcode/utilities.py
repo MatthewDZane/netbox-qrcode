@@ -35,7 +35,7 @@ def get_qr_text(size, text, font='ArialMT'):
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts/ComicSansMSBold.ttf', font_size)
+            fnt = ImageFont.truetype(r'/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts/ArialBlack.ttf', font_size)
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
