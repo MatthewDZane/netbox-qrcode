@@ -54,7 +54,7 @@ def get_qr_text(size, text, font='ArialMT'):
     W, H = size
     draw.text(((W-w)/2, (H-h)/2), text, font=fnt, fill='black')
 
-    files = os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/') + os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts') ++ os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/templates') 
+    files = os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/') + os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts') + os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/templates') 
     return img,font_success, files
 
 
