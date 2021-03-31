@@ -30,12 +30,12 @@ def get_img_b64(img):
 
 def get_qr_text(size, text, font='ArialMT'):
     img = Image.new('L', size, 'white')
-    font_size = 1
+    font_size = 100
     flag = True
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype('/tmp/netbox-qrcode/netbox-qrcode/fonts/{}.ttf'.format('ArialMT'), font_size)
+            fnt = ImageFont.truetype('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts/ComicSansMSBold.ttf', font_size)
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
