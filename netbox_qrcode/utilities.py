@@ -37,7 +37,7 @@ def get_qr_text(size, text, font='ArialMT'):
     while flag:
         #file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype(fm.findfont(fm.FontProperties(family='DejaVu Sans')),font_size)
+            fnt = ImageFont.truetype(r'./venv/lib/python3.8/site-packages/netbox_qrcode/fonts/TahomaBold.ttf',font_size)
             font_success = 'Success'
         except Exception:
             fnt = ImageFont.load_default()
