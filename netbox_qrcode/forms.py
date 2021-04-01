@@ -1,11 +1,8 @@
 from django import forms
-from utilities.forms import (
-    BootstrapMixin, DynamicModelMultipleChoiceField,
-)
 from dcim.models import Device, Site, Region
+from utilities.forms import DynamicModelMultipleChoiceField
 
-
-class SearchFilterForm(BootstrapMixin, forms.Form):
+class SearchFilterForm(forms.Form):
 
     model = Device
 

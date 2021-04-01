@@ -10,16 +10,16 @@ from . import forms, filters
 
 class QRcodeHomeView(View):
     queryset = Device.objects.all()
-    filterset = filters.SearchFilterSet
+    # filterset = filters.SearchFilterSet
     template_name = 'netbox_qrcode/home.html'
 
     def get(self, request):
 
-        if not request.GET:
-            self.queryset = Device.objects.none()
+        # if not request.GET:
+        #     self.queryset = Device.objects.none()
 
-        layout_context = {}
+        # layout_context = {}
 
-        self.queryset = self.filterset(request.GET, self.queryset).qs
+        # self.queryset = self.filterset(request.GET, self.queryset).qs
 
         return render(request, self.template_name)
