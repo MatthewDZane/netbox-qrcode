@@ -4,5 +4,4 @@ from django.views import View
 class QRcodeHomeView(View):
 
     def get(self, request):
-
-        return render(request,"netbox_qrcode/home.html")
+         return render(request,"netbox_qrcode/home.html")
