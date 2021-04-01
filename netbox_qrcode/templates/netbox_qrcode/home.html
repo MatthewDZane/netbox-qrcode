@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 <body>
-  {% include 'inc/search_panel.html' %}
+  <div class="col-md-3 pull-right right-side-panel noprint" style="z-index: 2">
+    {% include 'inc/search_panel.html' %} {% block sidebar %}{% endblock %}
+  </div>
   <h2>Netbox QR Code Menu</h2>
 </body>
