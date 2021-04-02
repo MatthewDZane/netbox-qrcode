@@ -35,11 +35,11 @@ def get_qr_text(size, text, font='ArialMT'):
     flag = True
     font_success = ''
     while flag:
-        #file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
+        file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         #file = open(r'/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts/TahomaBold.ttf', "rb")
         #bytes_font = BytesIO(file.read())
         try:
-            fnt = ImageFont.truetype('/source/netbox_qrcode_ui/fonts/ArialMT.ttf',font_size)
+            fnt = ImageFont.truetype(file_path,font_size)
             font_success = 'Success'
         except Exception:
             fnt = ImageFont.load_default()
@@ -54,7 +54,7 @@ def get_qr_text(size, text, font='ArialMT'):
     W, H = size
     draw.text(((W-w)/2, (H-h)/2), text, font=fnt, fill='black')
 
-    files = os.listdir('/source/netbox_qrcode_ui/') + os.listdir('/source/netbox_qrcode_ui/fonts')
+    files = os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/') + os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/fonts') + os.listdir('/opt/netbox/venv/lib/python3.8/site-packages/netbox_qrcode/templates/netbox_qrcode') 
     return img,font_success, files
 
 
