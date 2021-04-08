@@ -4,12 +4,13 @@ services:
   netbox:
     build:
       context: ../
-      dockerfile: develop/Dockerfile
+      dockerfile: development/Dockerfile
+    image: "netbox-qrcode-ui/netbox:${NETBOX_VER}-py${PYTHON_VER}"
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     ports:
-      - '8000:8000'
+      - "8000:8000"
     depends_on:
       - postgres
       - redis
@@ -17,12 +18,13 @@ services:
       - ./dev.env
     volumes:
       - ./configuration.py:/opt/netbox/netbox/netbox/configuration.py
-      - ../netbox_qrcode:/source/netbox_qrcode
+      - ../:/source
     tty: true
   worker:
     build:
       context: ../
-      dockerfile: develop/Dockerfile
+      dockerfile: development/Dockerfile
+    image: "netbox-qrcode-ui/netbox:${NETBOX_VER}-py${PYTHON_VER}"
     command: sh -c "python manage.py rqworker"
     depends_on:
       - netbox
@@ -30,13 +32,13 @@ services:
       - ./dev.env
     volumes:
       - ./configuration.py:/opt/netbox/netbox/netbox/configuration.py
-      - ../netbox_qrcode:/source/netbox_qrcode
+      - ../netbox_qrcode_ui:/source/netbox_qrcode_ui
     tty: true
   postgres:
-    image: postgres:12
+    image: postgres:10
     env_file: dev.env
-    volumes:     
-      - pgdata_netbox_qrcode:/var/lib/postgresql/data
+    volumes:
+      - pgdata_netbox_qrcode_ui:/var/lib/postgresql/data
   redis:
     image: redis:5-alpine
     command:
@@ -45,4 +47,4 @@ services:
       - redis-server --appendonly yes --requirepass $$REDIS_PASSWORD  ## $$ because of docker-compose
     env_file: ./dev.env
 volumes:
-  pgdata_netbox_qrcode:
+  pgdata_netbox_qrcode_ui:

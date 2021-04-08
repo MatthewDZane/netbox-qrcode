@@ -84,7 +84,7 @@ class QRcodeHomeView(View):
 # View for when 'Print Selected' Button Pressed
 class PrintView(View):
 
-    template_name = 'netbox_qrcode/print.html'
+    template_name = 'netbox_qrcode_ui/print.html'
 
     # Collect post form content from menu page
     def post(self, request):
