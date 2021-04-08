@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('netbox_qrcode', '0015_auto_20210405_1420'),
+        ('netbox_qrcode_ui', '0015_auto_20210405_1420'),
     ]
 
     operations = [
