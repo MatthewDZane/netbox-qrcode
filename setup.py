@@ -22,8 +22,8 @@ def get_version(rel_path):
 
 
 setup(
-    name='netbox-qrcode-ui',
-    version=get_version('netbox_qrcode_ui/version.py'),
+    name='netbox-qrcode',
+    version=get_version('netbox_qrcode/version.py'),
     description='QR Code generation for netbox objects',
     long_description=long_description,
     long_description_content_type="text/markdown",

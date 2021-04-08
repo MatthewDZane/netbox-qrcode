@@ -74,7 +74,7 @@ class QRCode(PluginTemplateExtension):
             img = get_img_b64(qr_img)
         try:
             return self.render(
-                'netbox_qrcode_ui/qrcode.html', extra_context={'image': img}
+                'netbox_qrcode/qrcode.html', extra_context={'image': img}
             )
         except ObjectDoesNotExist:
             return ''

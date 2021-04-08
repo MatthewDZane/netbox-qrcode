@@ -3,7 +3,7 @@ from .version import __version__
 
 
 class QRCodeConfig(PluginConfig):
-    name = 'netbox_qrcode_ui'
+    name = 'netbox_qrcode'
     verbose_name = 'QR Code View'   # Subtitle to dropdown
     description = 'Generate QR codes for the objects'
     version = __version__

@@ -16,7 +16,7 @@ import requests
 
 
 class QRcodeHomeView(View):
-    template_name = 'netbox_qrcode_ui/home.html'
+    template_name = 'netbox_qrcode/home.html'
     filterset_device = filters.SearchDeviceFilterSet
     filterset_rack = filters.SearchRackFilterSet
     filterset_cable = filters.SearchCableFilterSet
@@ -84,7 +84,7 @@ class QRcodeHomeView(View):
 # View for when 'Print Selected' Button Pressed
 class PrintView(View):
 
-    template_name = 'netbox_qrcode_ui/print.html'
+    template_name = 'netbox_qrcode/print.html'
 
     # Collect post form content from menu page
     def post(self, request):
@@ -165,4 +165,4 @@ class PrintView(View):
 
         # No images selected, redirect to qrcode menu page
         else:
-            return redirect('/plugins/netbox_qrcode_ui')
+            return redirect('/plugins/netbox_qrcode')
