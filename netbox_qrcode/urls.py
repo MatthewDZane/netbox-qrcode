@@ -2,5 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('qrcodes/', views.QRcodeHomeView.as_view(), name='qrcodes'),
+    path('', views.QRcodeHomeView.as_view(), name='qrcode_menu'),
+    path('print/', views.PrintView.as_view(), name='print_menu'),
+
 ]

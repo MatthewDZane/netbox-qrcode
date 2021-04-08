@@ -33,17 +33,13 @@ def get_qr_text(size, text, font='ArialMT'):
     img = Image.new('L', size, 'white')
     font_size = 100
     flag = True
-    font_success = ''
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
-
         try:
             fnt = ImageFont.truetype(file_path,font_size)
-            font_success = 'Success'
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
-            font_success = 'Failed getting ' + os.path.join(os.path.dirname(__file__), 'fonts/{}.ttf'.format(font))
 
         draw = ImageDraw.Draw(img)
         w, h = draw.textsize(text, font=fnt)
@@ -53,12 +49,17 @@ def get_qr_text(size, text, font='ArialMT'):
     W, H = size
     draw.text(((W-w)/2, (H-h)/2), text, font=fnt, fill='black')
 
-    files = os.listdir('/')
-    return img,font_success, files
+    return img
 
 
 def get_concat(im1, im2):
-    dst = Image.new('L', (im1.width + im2.width, im1.height))
+    dst = Image.new('L', (im1.width + im2.width, im1.height), 'white')
     dst.paste(im1, (0, 0))
     dst.paste(im2, (im1.width, 0))
+    return dst
+
+def get_concat_v(im1, im2):
+    dst = Image.new('L', (im1.width, im1.height + im2.height), 'white')
+    dst.paste(im1, (0, 0))
+    dst.paste(im2, (0, im1.height))
     return dst

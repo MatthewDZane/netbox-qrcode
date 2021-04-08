@@ -14,13 +14,6 @@
   <div>
     <img src="data:image/png;base64,{{image}}" /><br />
     <a download="qr.png" href="data:image/png;base64,{{image}}">Download</a>
-    <div>{{success}}</div>
-    <ul>
-      {% for file in files %}
-      <li>{{file}}</li>
-      {% endfor %}
-    </ul>
-  </div>
   <div class="panel-footer text-right noprint">
     <button
       onclick="printImg('data:image/png;base64,{{image}}')"
