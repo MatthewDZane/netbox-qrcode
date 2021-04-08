@@ -4,11 +4,11 @@ from .version import __version__
 
 class QRCodeConfig(PluginConfig):
     name = 'netbox_qrcode'
-    verbose_name = 'QR Code View'   # Subtitle to dropdown
+    verbose_name = 'qrcode'
     description = 'Generate QR codes for the objects'
     version = __version__
-    author = 'Jason Lin'
-    author_email = 'jasonlin1198@gmail.com'
+    author = 'Nikolay Yuzefovich'
+    author_email = 'mgk.kolek@gmail.com'
     required_settings = []
     default_settings = {
         'with_text': True,
