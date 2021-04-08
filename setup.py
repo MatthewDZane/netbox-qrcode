@@ -38,8 +38,7 @@ setup(
     },
     install_requires=[
         'qrcode',
-        'Pillow',
-        'requests',
+        'Pillow'
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
