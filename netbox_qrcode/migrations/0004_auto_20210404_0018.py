@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('dcim', '0122_standardize_name_length'),
-        ('netbox_qrcode_ui', '0003_auto_20210403_2225'),
+        ('netbox_qrcode', '0003_auto_20210403_2225'),
     ]
 
     operations = [
