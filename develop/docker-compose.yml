@@ -4,13 +4,12 @@ services:
   netbox:
     build:
       context: ../
-      dockerfile: development/Dockerfile
-    image: "netbox-qrcode/netbox:${NETBOX_VER}-py${PYTHON_VER}"
+      dockerfile: develop/Dockerfile
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     ports:
-      - "8000:8000"
+      - '8000:8000'
     depends_on:
       - postgres
       - redis
@@ -18,13 +17,12 @@ services:
       - ./dev.env
     volumes:
       - ./configuration.py:/opt/netbox/netbox/netbox/configuration.py
-      - ../:/source
+      - ../netbox_qrcode:/source/netbox_qrcode
     tty: true
   worker:
     build:
       context: ../
-      dockerfile: development/Dockerfile
-    image: "netbox-qrcode/netbox:${NETBOX_VER}-py${PYTHON_VER}"
+      dockerfile: develop/Dockerfile
     command: sh -c "python manage.py rqworker"
     depends_on:
       - netbox
@@ -35,9 +33,9 @@ services:
       - ../netbox_qrcode:/source/netbox_qrcode
     tty: true
   postgres:
-    image: postgres:10
+    image: postgres:12
     env_file: dev.env
-    volumes:
+    volumes:     
       - pgdata_netbox_qrcode:/var/lib/postgresql/data
   redis:
     image: redis:5-alpine
