@@ -1,3 +1,4 @@
+<pre>
 PLUGINS_CONFIG = {
     'netbox_qrcode': {
         'with_text': True,
