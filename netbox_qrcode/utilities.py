@@ -5,6 +5,7 @@ from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
 
 from pkg_resources import resource_stream
+import os
 
 
 def get_qr_with_text(qr, descr):
@@ -28,17 +29,18 @@ def get_img_b64(img):
     return str(base64.b64encode(stream.getvalue()), encoding='ascii')
 
 
-def get_qr_text(size, text, font='TahomaBold'):
+def get_qr_text(size, text, font='ArialMT'):
     img = Image.new('L', size, 'white')
-    font_size = 56
+    font_size = 100
     flag = True
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype(file_path, font_size)
+            fnt = ImageFont.truetype(file_path,font_size)
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
+
         draw = ImageDraw.Draw(img)
         w, h = draw.textsize(text, font=fnt)
         if w < size[0] - 4 and h < size[1] - 4:
@@ -46,11 +48,18 @@ def get_qr_text(size, text, font='TahomaBold'):
         font_size -= 1
     W, H = size
     draw.text(((W-w)/2, (H-h)/2), text, font=fnt, fill='black')
+
     return img
 
 
 def get_concat(im1, im2):
-    dst = Image.new('L', (im1.width + im2.width, im1.height))
+    dst = Image.new('L', (im1.width + im2.width, im1.height), 'white')
     dst.paste(im1, (0, 0))
     dst.paste(im2, (im1.width, 0))
+    return dst
+
+def get_concat_v(im1, im2):
+    dst = Image.new('L', (im1.width, im1.height + im2.height), 'white')
+    dst.paste(im1, (0, 0))
+    dst.paste(im2, (0, im1.height))
     return dst
