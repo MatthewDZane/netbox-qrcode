@@ -1,5 +1,5 @@
 <pre>
-PLUGINS = ['netbox_qrcode', 'nextbox_ui_plugin']
+PLUGINS = ['netbox_qrcode', 'nextbox_ui_plugin', 'netbox-bgp']
 PLUGINS_CONFIG = {
     'netbox_qrcode': {
         'with_text': True,
