@@ -39,7 +39,7 @@ def get_qr_text(size, text, font='ArialMT'):
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
 
         # try:
-        fnt = ImageFont.truetype(file_path, font_size)
+        fnt = ImageFont.truetype('/usr/share/fonts/ttf-ubuntu-font-family/Ubuntu-B.ttf', font_size)
         # except Exception:
         #     fnt = ImageFont.load_default()
         #     flag = False
