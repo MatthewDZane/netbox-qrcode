@@ -1,2 +1,2 @@
 recursive-include netbox_qrcode/templates *.html
-recursive-include netbox_qrcode/static/fonts *.ttf
+recursive-include netbox_qrcode/static/ *
