@@ -4,7 +4,7 @@ import qrcode
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
 
-from pkg_resources import resource_stream
+from pkg_resources import resource_stream, resource_exists
 import os
 
 
@@ -34,7 +34,7 @@ def get_qr_text(size, text, font='ArialMT'):
     font_size = 100
     flag = True
     while flag:
-        file_path_test = resource_stream(__package__, 'fonts/{}.ttf'.format(font))
+        file_path_test = resource_exists(__name__, 'fonts/{}.ttf'.format(font))
 
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
 
