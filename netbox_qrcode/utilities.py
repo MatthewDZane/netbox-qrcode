@@ -37,7 +37,7 @@ def get_qr_text(size, text, font='ArialMT'):
         file_path = resource_stream(__name__, 'static/netbox_qrcode/fonts/{}.ttf'.format(font))
         file_path = "test static"
         # try:
-        fnt = ImageFont.truetype(file_path, font_size)
+        fnt = ImageFont.truetype(r'/opt/netbox/netbox/static/netbox_qrcode/fonts/ArialMT.ttf', font_size)
         # except Exception:
         #     fnt = ImageFont.load_default()
         #     flag = False
