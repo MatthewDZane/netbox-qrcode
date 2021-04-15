@@ -13,11 +13,6 @@
       Accept: "application/json",
       Authorization: "Token cd664af77f6e41253025619a80be27a6a124f13e",
     }
-    async function getRackJson() {
-      return await fetch( window.location.protocol + "//" + window.location.hostname + "/api/dcim/racks/", {
-        headers: headers,
-      }).then((response) => response.json())
-    }
 
     async function getDeviceJson() {
       return await fetch(window.location.protocol + "//" + window.location.hostname + "/api/dcim/devices/", {
@@ -28,16 +23,6 @@
     /* On valid racks and devices, create list of objects containing urls and ids */
     async function getURLS() {
       let urlList = []
-
-      await getRackJson().then((json) => {
-        const racks = json["results"]
-        let url = window.location.protocol + "//" + window.location.hostname + "/dcim/racks/"
-        racks.forEach((rack) => {
-          const id = rack["id"]
-          const url_id = [url, id, "/"].join("")
-          urlList.push({ url_id, id })
-        })
-      })
 
       await getDeviceJson().then((json) => {
         const devices = json["results"]

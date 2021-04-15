@@ -19,12 +19,6 @@
       }).then((response) => response.json())
     }
 
-    async function getDeviceJson() {
-      return await fetch(window.location.protocol + "//" + window.location.hostname + "/api/dcim/devices/", {
-        headers: headers,
-      }).then((response) => response.json())
-    }
-
     /* On valid racks and devices, create list of objects containing urls and ids */
     async function getURLS() {
       let urlList = []
@@ -34,16 +28,6 @@
         let url = window.location.protocol + "//" + window.location.hostname + "/dcim/racks/"
         racks.forEach((rack) => {
           const id = rack["id"]
-          const url_id = [url, id, "/"].join("")
-          urlList.push({ url_id, id })
-        })
-      })
-
-      await getDeviceJson().then((json) => {
-        const devices = json["results"]
-        let url = window.location.protocol + "//" + window.location.hostname + "/dcim/devices/"
-        devices.forEach((device) => {
-          const id = device["id"]
           const url_id = [url, id, "/"].join("")
           urlList.push({ url_id, id })
         })
