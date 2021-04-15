@@ -51,7 +51,7 @@ class QRCode(PluginTemplateExtension):
             text = '\n'.join(text)
 
             # Create qr text with image size and text
-            text_img, path = get_qr_text(qr_img.size, text, 'ArialMT')
+            text_img = get_qr_text(qr_img.size, text, 'ArialMT')
 
             # Combine qr image and qr text 
             qr_with_text = get_concat(qr_img, text_img)
@@ -80,7 +80,7 @@ class QRCode(PluginTemplateExtension):
             img = get_img_b64(qr_img)
         try:
             return self.render(
-                'netbox_qrcode/qrcode.html', extra_context={'image': img, 'path': path}
+                'netbox_qrcode/qrcode.html', extra_context={'image': img}
             )
         except ObjectDoesNotExist:
             return ''

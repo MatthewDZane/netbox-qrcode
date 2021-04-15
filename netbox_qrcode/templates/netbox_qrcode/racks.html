@@ -70,6 +70,13 @@
   </button>
 </div>
 
+<!--Direct to Rack page-->
+<div class="text-left">
+  <a class="btn btn-primary" href="/plugins/netbox_qrcode_ui/devices">Devices</a>
+  <a class="btn btn-primary" href="/plugins/netbox_qrcode_ui/racks">Racks</a>
+  <a class="btn btn-primary" href="/plugins/netbox_qrcode_ui/cables">Cables</a>
+</div>
+
 <!--Div to hold table and search components-->
 <div class="row">
   <div class="col-md-12">
@@ -78,12 +85,13 @@
       <!--POST form for checkbox submission-->
       <form method="POST" action="print/">
         {% csrf_token %}
-        <h3>{% block title %}Devices{% endblock %}</h3>
-        <!--Device Table-->
+
+        <!--Rack Table-->
+        <h3>Racks</h3>
         <div class="row">
           <div>
             <!--Table variable from views.py-->
-            {% render_table table_device %}
+            {% render_table table_rack %}
 
             <!--Print Button-->
             <div class="panel-footer text-left">
@@ -93,45 +101,15 @@
                 value="Print Selected"
               />
               <!--Print QR code without text-->
-              <input type="checkbox" id="text-device" name="without_text" value="without_text" style="margin-left: 20px"/>
-              <label for="text-device">Print without text</label>
+              <input type="checkbox" id="text-rack" name="without_text" value="without_text" style="margin-left: 20px"/>
+              <label for="text-rack">Print without text</label>
               <span aria-hidden="true"></span>
             </div>
           </div>
         </div>
 
         <!--Specify object type-->
-        <input type="hidden" name="obj_type" value="Devices" />
-      </form>
-
-      <!--POST form for checkbox submission-->
-      <form method="POST" action="print/">
-        {% csrf_token %}
-
-        <!--Cable Table-->
-        <h3>Cables</h3>
-        <div class="row">
-          <div>
-            <!--Table variable from views.py-->
-            {% render_table table_cable %}
-
-            <!--Print Button-->
-            <div class="panel-footer text-left">
-              <input
-                class="btn btn-warning btn-sm"
-                type="submit"
-                value="Print Selected"
-              />
-              <!--Print QR code without text-->
-              <span aria-hidden="true"></span>
-              <input type="checkbox" id="text-cable" name="without_text" value="without_text" style="margin-left: 20px"/>
-              <label for="text-cable">Print without text</label>
-            </div>
-          </div>
-        </div>
-
-        <!--Specify object type-->
-        <input type="hidden" name="obj_type" value="Cables" />
+        <input type="hidden" name="obj_type" value="Racks" />
       </form>
     </div>
 
