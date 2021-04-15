@@ -73,13 +73,6 @@ class QRExtendedRack(QRObject):
         blank=True,
         null=True
     )
-    facility_id = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name='Facility ID',
-        help_text='Locally-assigned identifier'
-    )
 
     status = models.CharField(
         max_length=50,

@@ -79,7 +79,6 @@ class QRRackTables(BaseTable):
             "site",
             "group",
             "status",
-            "facility_id",
             "role",
             "id",
             "photo",
