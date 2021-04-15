@@ -14,13 +14,13 @@
       Authorization: "Token cd664af77f6e41253025619a80be27a6a124f13e",
     }
     async function getRackJson() {
-      return await fetch( window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/api/dcim/racks/", {
+      return await fetch( window.location.protocol + "//" + window.location.hostname + "/api/dcim/racks/", {
         headers: headers,
       }).then((response) => response.json())
     }
 
     async function getDeviceJson() {
-      return await fetch(window.location.protocol + "//" + window.location.hostname + ":" +  window.location.port + "/api/dcim/devices/", {
+      return await fetch(window.location.protocol + "//" + window.location.hostname + "/api/dcim/devices/", {
         headers: headers,
       }).then((response) => response.json())
     }
@@ -31,7 +31,7 @@
 
       await getRackJson().then((json) => {
         const racks = json["results"]
-        let url = window.location.protocol + "//" + window.location.hostname + ":" +  window.location.port + "/dcim/racks/"
+        let url = window.location.protocol + "//" + window.location.hostname + "/dcim/racks/"
         racks.forEach((rack) => {
           const id = rack["id"]
           const url_id = [url, id, "/"].join("")
@@ -41,7 +41,7 @@
 
       await getDeviceJson().then((json) => {
         const devices = json["results"]
-        let url = window.location.protocol + "//" + window.location.hostname + ":" +  window.location.port + "/dcim/devices/"
+        let url = window.location.protocol + "//" + window.location.hostname + "/dcim/devices/"
         devices.forEach((device) => {
           const id = device["id"]
           const url_id = [url, id, "/"].join("")
@@ -69,18 +69,40 @@
   </button>
 </div>
 
-<!--Direct to Rack page-->
-<div class="text-left">
-  <a class="btn btn-primary" href="/plugins/netbox_qrcode_ui/devices">Devices</a>
-  <a class="btn btn-primary" href="/plugins/netbox_qrcode_ui/racks">Racks</a>
-  <a class="btn btn-primary" href="/plugins/netbox_qrcode_ui/cables">Cables</a>
-</div>
-
 <!--Div to hold table and search components-->
 <div class="row">
   <div class="col-md-12">
     <!--Div to hold all table components-->
     <div class="col-md-9">
+      <!--POST form for checkbox submission-->
+      <form method="POST" action="print/">
+        {% csrf_token %}
+        <h3>{% block title %}Devices{% endblock %}</h3>
+        <!--Device Table-->
+        <div class="row">
+          <div>
+            <!--Table variable from views.py-->
+            {% render_table table_device %}
+
+            <!--Print Button-->
+            <div class="panel-footer text-left">
+              <input
+                class="btn btn-warning btn-sm"
+                type="submit"
+                value="Print Selected"
+              />
+              <!--Print QR code without text-->
+              <input type="checkbox" id="text-device" name="without_text" value="without_text" style="margin-left: 20px"/>
+              <label for="text-device">Print without text</label>
+              <span aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+
+        <!--Specify object type-->
+        <input type="hidden" name="obj_type" value="Devices" />
+      </form>
+
       <!--POST form for checkbox submission-->
       <form method="POST" action="print/">
         {% csrf_token %}
@@ -109,6 +131,36 @@
 
         <!--Specify object type-->
         <input type="hidden" name="obj_type" value="Racks" />
+      </form>
+
+      <!--POST form for checkbox submission-->
+      <form method="POST" action="print/">
+        {% csrf_token %}
+
+        <!--Cable Table-->
+        <h3>Cables</h3>
+        <div class="row">
+          <div>
+            <!--Table variable from views.py-->
+            {% render_table table_cable %}
+
+            <!--Print Button-->
+            <div class="panel-footer text-left">
+              <input
+                class="btn btn-warning btn-sm"
+                type="submit"
+                value="Print Selected"
+              />
+              <!--Print QR code without text-->
+              <span aria-hidden="true"></span>
+              <input type="checkbox" id="text-cable" name="without_text" value="without_text" style="margin-left: 20px"/>
+              <label for="text-cable">Print without text</label>
+            </div>
+          </div>
+        </div>
+
+        <!--Specify object type-->
+        <input type="hidden" name="obj_type" value="Cables" />
       </form>
     </div>
 

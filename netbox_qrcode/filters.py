@@ -1,16 +1,16 @@
 import django_filters
 from django.db import models
 
-from dcim.models import Device, Site, Region, Rack, DeviceRole, DeviceType, Manufacturer, RackGroup, RackRole
-from dcim.choices import DeviceStatusChoices, RackStatusChoices, RackTypeChoices, RackWidthChoices, CableStatusChoices, CableTypeChoices
+from dcim.models import Device, Site, Region, Rack, DeviceRole, DeviceType, Manufacturer
+from dcim.choices import DeviceStatusChoices
 
-from utilities.choices import ColorChoices
-from utilities.filters import TreeNodeMultipleChoiceFilter, MultiValueNumberFilter, MultiValueCharFilter
-
+from utilities.filters import TreeNodeMultipleChoiceFilter
 from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
 
 
+
 # Recieves QuerySet in Views.py and filters based on form values, returns the resulting filtered queryset back to views.py
+
 class SearchDeviceFilterSet(django_filters.FilterSet):
 
     q = django_filters.CharFilter(
@@ -74,103 +74,43 @@ class SearchDeviceFilterSet(django_filters.FilterSet):
         )
 
 class SearchRackFilterSet(django_filters.FilterSet):
-    q = django_filters.CharFilter(
-        method='search',
-        label='Search',
+
+    site_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Site.objects.all(),
+        label='Site (ID)',
     )
-    region = TreeNodeMultipleChoiceFilter(
+    region_id = django_filters.ModelMultipleChoiceFilter(
         queryset=Region.objects.all(),
         field_name='site__region',
-        lookup_expr='in',
-        to_field_name='slug',
-        label='Region (slug)',
-    )
-    site = django_filters.ModelMultipleChoiceFilter(
-        field_name='site__slug',
-        queryset=Site.objects.all(),
-        to_field_name='slug',
-        label='Site (slug)',
-    )
-    group = TreeNodeMultipleChoiceFilter(
-        queryset=RackGroup.objects.all(),
-        field_name='group',
-        lookup_expr='in',
-        to_field_name='slug',
-        label='Rack group (slug)',
-    )
-    status = django_filters.MultipleChoiceFilter(
-        choices=RackStatusChoices,
-        null_value=None
-    )
-    type = django_filters.MultipleChoiceFilter(
-        choices=RackTypeChoices
-    )
-    width = django_filters.MultipleChoiceFilter(
-        choices=RackWidthChoices
-    )
-    role = django_filters.ModelMultipleChoiceFilter(
-        field_name='role__slug',
-        queryset=RackRole.objects.all(),
-        to_field_name='slug',
-        label='Role (slug)',
-    )
-    serial = django_filters.CharFilter(
-        lookup_expr='iexact'
+        label='Region (ID)',
     )
 
     class Meta:
         model = QRExtendedRack
         fields = ['id', ]
 
-    def search(self, queryset, name, value):
-        if not value.strip():
-            return queryset
-        return queryset.filter(
-            models.Q(name__icontains=value)
-        )
-
 
 
 class SearchCableFilterSet(django_filters.FilterSet):
-    q = django_filters.CharFilter(
-        method='search',
-        label='Search',
+
+    device_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=QRExtendedCable.objects.all(),
+        to_field_name='id',
+        field_name='id',
+        label='Device (ID)',
     )
-    type = django_filters.MultipleChoiceFilter(
-        choices=CableTypeChoices
+    site_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Site.objects.all(),
+        label='Site (ID)',
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=CableStatusChoices
-    )
-    color = django_filters.MultipleChoiceFilter(
-        choices=ColorChoices
-    )
-    device = MultiValueCharFilter(
-        method='filter_device',
-        field_name='device__name'
-    )
-    rack = MultiValueNumberFilter(
-        method='filter_device',
-        field_name='device__rack__name'
-    )
-    site = MultiValueNumberFilter(
-        method='filter_device',
-        field_name='device__site__slug'
-    )
-    tenant = MultiValueNumberFilter(
-        method='filter_device',
-        field_name='device__tenant__slug'
+    region_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Region.objects.all(),
+        field_name='site__region',
+        label='Region (ID)',
     )
 
     class Meta:
         model = QRExtendedCable
         fields = ['id', ]
-
-    def search(self, queryset, name, value):
-        if not value.strip():
-            return queryset
-        return queryset.filter(label__icontains=value)
-
-
 
 

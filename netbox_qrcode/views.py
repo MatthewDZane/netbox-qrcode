@@ -15,120 +15,68 @@ from .utilities import get_img_b64, get_concat, get_concat_v
 import requests
 
 
-class QRcodeDeviceView(View):
+class QRcodeHomeView(View):
     template_name = 'netbox_qrcode/home.html'
     filterset_device = filters.SearchDeviceFilterSet
+    filterset_rack = filters.SearchRackFilterSet
+    filterset_cable = filters.SearchCableFilterSet
 
     def get(self, request):
         # Clear all objects in case of duplicate key violation
         QRExtendedDevice.objects.all().delete()
+        QRExtendedRack.objects.all().delete()
+        QRExtendedCable.objects.all().delete()
         
         base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
 
-        # Find all current Devices and instantiates new models that provide links to photos 
+        # Find all current Devices, Racks, Cables and instantiates new models that provide links to photos 
         for device in Device.objects.all().iterator():
 
             # Create device with resized url
             url_resized ='{}resized{}.png'.format(base_url, device.name)
             QRExtendedDevice.objects.get_or_create(name=device.name, id=device.id, device=device, status=device.status, device_role=device.device_role, device_type=device.device_type, site=device.site, rack=device.rack, photo='image-attachments/{}.png'.format(device.name), url=url_resized)
-
-        # Create QuerySets from extended models
-        queryset_device = QRExtendedDevice.objects.all()
-
-        # Filter QuerySets
-        queryset_device = self.filterset_device(request.GET, queryset_device).qs
-
-        # Create Tables for each separate object's querysets
-        table_device = QRDeviceTables(queryset_device)
-
-        # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 50}).configure(table_device)
-
-        # Render html with context
-        return render(request, self.template_name, {
-            'table_device': table_device, 
-            'filter_form': forms.SearchFilterFormDevice(
-                request.GET,
-                label_suffix=''
-            ),                
-            })
-
-
-class QRcodeRackView(View):
-    template_name = 'netbox_qrcode/racks.html'
-    filterset_rack = filters.SearchRackFilterSet
-
-    def get(self, request):
-        # Clear all objects in case of duplicate key violation
-        QRExtendedRack.objects.all().delete()
-        
-        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
-
-        # Find all current Racks and instantiates new models that provide links to photos 
+            
         for rack in Rack.objects.all().iterator():
 
             # Create rack with resized url
             url_resized ='{}resized{}.png'.format(base_url, rack.name)
-            QRExtendedRack.objects.get_or_create(name=rack.name, id=rack.id, rack=rack, facility_id=rack.facility_id, status=rack.status, site=rack.site, group=rack.group, role=rack.role, type=rack.type, photo='image-attachments/{}.png'.format(rack.name),url=url_resized)
+            QRExtendedRack.objects.get_or_create(name=rack.name, id=rack.id, rack=rack, status=rack.status, site=rack.site, group=rack.group, role=rack.role, photo='image-attachments/{}.png'.format(rack.name),url=url_resized)
 
-
-        # Create QuerySets from extended models
-        queryset_rack = QRExtendedRack.objects.all()
-
-        # Filter QuerySets
-        queryset_rack = self.filterset_rack(request.GET, queryset_rack).qs
-
-        # Create Tables for each separate object's querysets
-        table_rack = QRRackTables(queryset_rack)
-
-        # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 25}).configure(table_rack)
-
-        # Render html with context
-        return render(request, self.template_name, {
-            'table_rack': table_rack, 
-            'filter_form': forms.SearchFilterFormRack(
-                request.GET,
-                label_suffix=''
-            ),                
-            })
-
-
-
-class QRcodeCableView(View):
-    template_name = 'netbox_qrcode/cables.html'
-    filterset_cable = filters.SearchCableFilterSet
-
-    def get(self, request):
-        # Clear all objects in case of duplicate key violation
-        QRExtendedCable.objects.all().delete()
-        
-        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
-
-        # Find all current Cables and instantiates new models that provide links to photos 
         for cable in Cable.objects.all().iterator():
 
             # Create cable with resized url
             url_resized ='{}resized{}.png'.format(base_url, cable.name)
-            QRExtendedCable.objects.get_or_create(name=cable.name, id=cable.id, cable=cable, _termination_a_device=cable._termination_a_device, _termination_b_device=cable._termination_b_device, photo='image-attachments/{}.png'.format(cable.name),url=url_resized)
+            QRExtendedCable.objects.get_or_create(name=cable.name, id=cable.id, cable=cable, photo='image-attachments/{}.png'.format(cable.name),url=url_resized)
+
 
 
         # Create QuerySets from extended models
+        queryset_device = QRExtendedDevice.objects.all()
+        queryset_rack = QRExtendedRack.objects.all()
         queryset_cable = QRExtendedCable.objects.all()
 
         # Filter QuerySets
+        queryset_device = self.filterset_device(request.GET, queryset_device).qs
+        queryset_rack = self.filterset_rack(request.GET, queryset_rack).qs
         queryset_cable = self.filterset_cable(request.GET, queryset_cable).qs
 
+
         # Create Tables for each separate object's querysets
+        table_device = QRDeviceTables(queryset_device)
+        table_rack = QRRackTables(queryset_rack)
         table_cable = QRCableTables(queryset_cable)
 
         # Paginate Tables
+        RequestConfig(request, paginate={"per_page": 50}).configure(table_device)
+        RequestConfig(request, paginate={"per_page": 25}).configure(table_rack)
         RequestConfig(request, paginate={"per_page": 25}).configure(table_cable)
 
         # Render html with context
         return render(request, self.template_name, {
+            'table_device': table_device, 
+            'table_rack': table_rack, 
             'table_cable': table_cable, 
-            'filter_form': forms.SearchFilterFormCable(
+            'filter_form': forms.SearchFilterFormDevice(
                 request.GET,
                 label_suffix=''
             ),                
