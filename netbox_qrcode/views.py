@@ -214,12 +214,12 @@ class PrintView(View):
                     image = Image.open(requests.get(url, stream=True).raw)
                     image_rows.append(image)
 
-                final_image = image_rows[0]
-                for i in range(1,len(image_rows)):
-                    final_image = get_concat_v(final_image,image_rows[i])   
+                    final_image = image_rows[0]
+                    for i in range(1,len(image_rows)):
+                        final_image = get_concat_v(final_image,image_rows[i])   
 
-                # Convert and add as page
-                image_pages.append(get_img_b64(final_image))
+                    # Convert and add as page
+                    image_pages.append(get_img_b64(final_image))
 
                 # Send list of pages to print template
                 context['image'] = image_pages
