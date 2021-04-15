@@ -69,7 +69,7 @@ class QRcodeRackView(View):
 
             # Create rack with resized url
             url_resized ='{}resized{}.png'.format(base_url, rack.name)
-            QRExtendedRack.objects.get_or_create(name=rack.name, id=rack.id, rack=rack, status=rack.status, site=rack.site, group=rack.group, role=rack.role, type=rack.type, photo='image-attachments/{}.png'.format(rack.name),url=url_resized)
+            QRExtendedRack.objects.get_or_create(name=rack.name, id=rack.id, rack=rack, status=rack.status, site=rack.site, group=rack.group, role=rack.role, photo='image-attachments/{}.png'.format(rack.name),url=url_resized)
 
 
         # Create QuerySets from extended models
@@ -110,7 +110,7 @@ class QRcodeCableView(View):
 
             # Create cable with resized url
             url_resized ='{}resized{}.png'.format(base_url, cable.name)
-            QRExtendedCable.objects.get_or_create(name=cable.name, id=cable.id, cable=cable, _termination_a_device=cable._termination_a_device, _termination_b_device=cable._termination_b_device, photo='image-attachments/{}.png'.format(cable.name),url=url_resized)
+            QRExtendedCable.objects.get_or_create(name=cable.name, id=cable.id, cable=cable, photo='image-attachments/{}.png'.format(cable.name),url=url_resized)
 
 
         # Create QuerySets from extended models
