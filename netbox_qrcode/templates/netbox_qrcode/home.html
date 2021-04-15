@@ -84,13 +84,12 @@
       <!--POST form for checkbox submission-->
       <form method="POST" action="print/">
         {% csrf_token %}
-
-        <!--Rack Table-->
-        <h3>Racks</h3>
+        <h3>{% block title %}Devices{% endblock %}</h3>
+        <!--Device Table-->
         <div class="row">
           <div>
             <!--Table variable from views.py-->
-            {% render_table table_rack %}
+            {% render_table table_device %}
 
             <!--Print Button-->
             <div class="panel-footer text-left">
@@ -100,15 +99,15 @@
                 value="Print Selected"
               />
               <!--Print QR code without text-->
-              <input type="checkbox" id="text-rack" name="without_text" value="without_text" style="margin-left: 20px"/>
-              <label for="text-rack">Print without text</label>
+              <input type="checkbox" id="text-device" name="without_text" value="without_text" style="margin-left: 20px"/>
+              <label for="text-device">Print without text</label>
               <span aria-hidden="true"></span>
             </div>
           </div>
         </div>
 
         <!--Specify object type-->
-        <input type="hidden" name="obj_type" value="Racks" />
+        <input type="hidden" name="obj_type" value="Devices" />
       </form>
     </div>
 
