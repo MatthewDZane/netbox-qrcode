@@ -35,12 +35,11 @@ def get_qr_text(size, text, font='ArialMT'):
     flag = True
     while flag:
         file_path = resource_stream(__name__, 'static/netbox_qrcode/fonts/{}.ttf'.format(font))
-        file_path = "test static"
-        # try:
-        fnt = ImageFont.truetype(r'/opt/netbox/netbox/static/netbox_qrcode/fonts/ArialMT.ttf', font_size)
-        # except Exception:
-        #     fnt = ImageFont.load_default()
-        #     flag = False
+        try:
+            fnt = ImageFont.truetype(file_path, font_size)
+        except Exception:
+            fnt = ImageFont.load_default()
+            flag = False
 
         draw = ImageDraw.Draw(img)
         w, h = draw.textsize(text, font=fnt)
@@ -50,7 +49,7 @@ def get_qr_text(size, text, font='ArialMT'):
     W, H = size
     draw.text(((W-w)/2, (H-h)/2), text, font=fnt, fill='black')
 
-    return img, file_path
+    return img
 
 
 def get_concat(im1, im2):

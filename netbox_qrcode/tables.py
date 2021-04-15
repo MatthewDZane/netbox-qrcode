@@ -76,9 +76,10 @@ class QRRackTables(BaseTable):
         fields = (
             "pk",
             "rack",
-            "status",
             "site",
             "group",
+            "status",
+            "facility_id",
             "role",
             "id",
             "photo",

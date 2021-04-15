@@ -85,12 +85,12 @@
       <form method="POST" action="print/">
         {% csrf_token %}
 
-        <!--Rack Table-->
-        <h3>Racks</h3>
+        <!--Cable Table-->
+        <h3>Cables</h3>
         <div class="row">
           <div>
             <!--Table variable from views.py-->
-            {% render_table table_rack %}
+            {% render_table table_cable %}
 
             <!--Print Button-->
             <div class="panel-footer text-left">
@@ -100,15 +100,15 @@
                 value="Print Selected"
               />
               <!--Print QR code without text-->
-              <input type="checkbox" id="text-rack" name="without_text" value="without_text" style="margin-left: 20px"/>
-              <label for="text-rack">Print without text</label>
               <span aria-hidden="true"></span>
+              <input type="checkbox" id="text-cable" name="without_text" value="without_text" style="margin-left: 20px"/>
+              <label for="text-cable">Print without text</label>
             </div>
           </div>
         </div>
 
         <!--Specify object type-->
-        <input type="hidden" name="obj_type" value="Racks" />
+        <input type="hidden" name="obj_type" value="Cables" />
       </form>
     </div>
 

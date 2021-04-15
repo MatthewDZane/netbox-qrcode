@@ -23,8 +23,6 @@
   }
 </script>
 
-<div>{{text}}</div>
-
 <!--Top Panel-->
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
@@ -54,6 +52,7 @@
     </div>
   </div>
 </div>
+        {% comment %} {{button_template|safe}} {% endcomment %}
 
 <!--Preview Images-->
 {% for img in image%}
