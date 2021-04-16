@@ -4,55 +4,26 @@
 
 <h2 style="text-align: center">Netbox QR Code Menu</h2>
 
-<!--OnClick callback for Reload QR Codes button-->
-<script type="text/javascript">
-  function reloadQR() {
-    /* Perform GET requests and recieve json */
-    var headers = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: "Token cd664af77f6e41253025619a80be27a6a124f13e",
-    }
-    async function getRackJson() {
-      return await fetch( window.location.protocol + "//" + window.location.hostname + "/api/dcim/racks/", {
-        headers: headers,
-      }).then((response) => response.json())
-    }
-
-    /* On valid racks and devices, create list of objects containing urls and ids */
-    async function getURLS() {
-      let urlList = []
-
-      await getRackJson().then((json) => {
-        const racks = json["results"]
-        let url = window.location.protocol + "//" + window.location.hostname + "/dcim/racks/"
-        racks.forEach((rack) => {
-          const id = rack["id"]
-          const url_id = [url, id, "/"].join("")
-          urlList.push({ url_id, id })
-        })
-      })
-
-      return urlList
-    }
-
-    /* Iterate through urls and open with unique identifier */
-    getURLS().then((urls) => {
-      let counter = 0
-      urls.forEach((obj) => {
-        window.open(obj.url_id, String(counter++))
-      })
-    })
+<!--Prevent page reload form resubmission-->
+<script>
+  if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
   }
 </script>
 
-
-<!--Reload QR codes in container by opening new tabs of valid objects, needs popups enabled at web address-->
-<div class="text-center">
-  <button onclick="reloadQR()" ; class="btn btn-xl btn-primary">
-    <span class="Submit" aria-hidden="true">Reload QR Codes</span>
-  </button>
-</div>
+<!--Reloading QR codes handled by post request-->
+<form method="POST">
+  {% csrf_token %}
+  <div class="text-center">
+    <input
+      class="btn btn-primary btn-md"
+      type="submit"
+      name="reload"
+      value="Reload QR Codes"
+    />
+  </div>
+  {{ successMessage |safe }}
+</form>
 
 <!--Direct to Rack page-->
 <div class="text-left">

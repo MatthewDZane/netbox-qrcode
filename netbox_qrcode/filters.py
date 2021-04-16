@@ -8,9 +8,7 @@ from utilities.filters import TreeNodeMultipleChoiceFilter
 from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
 
 
-
 # Recieves QuerySet in Views.py and filters based on form values, returns the resulting filtered queryset back to views.py
-
 class SearchDeviceFilterSet(django_filters.FilterSet):
 
     q = django_filters.CharFilter(

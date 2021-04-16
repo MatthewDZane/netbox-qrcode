@@ -4,7 +4,7 @@ import qrcode
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
 
-from pkg_resources import resource_stream, resource_exists, resource_listdir
+from pkg_resources import resource_stream
 import os
 
 
@@ -36,7 +36,7 @@ def get_qr_text(size, text, font='ArialMT'):
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))
         try:
-            fnt = ImageFont.truetype(file_path, font_size)
+            fnt = ImageFont.truetype(file_path,font_size)
         except Exception:
             fnt = ImageFont.load_default()
             flag = False
@@ -63,3 +63,15 @@ def get_concat_v(im1, im2):
     dst.paste(im1, (0, 0))
     dst.paste(im2, (0, im1.height))
     return dst
+
+def add_print_padding(img, padding):
+    blank = Image.new('L', (padding, img.height), 'white')
+    img = get_concat(blank, img)
+    img = get_concat(img, blank)
+    return img
+
+def add_print_padding_v(img, padding):
+    blank = Image.new('L', (img.width, padding), 'white')
+    img = get_concat_v(blank, img)
+    img = get_concat_v(img, blank)
+    return img

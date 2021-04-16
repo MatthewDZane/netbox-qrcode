@@ -6,19 +6,24 @@
 <script type="text/javascript">
   function printImg(source) {
     var win = window.open("")
-    // Check if only one image selected
-    //if(typeof source === 'string'){
-    //  win.document.write('<img src="' + 'data:image/png;base64,' + source + '"/>')
-    //}
-    // Multiple images selected
-    //else{
-      // Add html template as new page to new window
-      for(let i = 0; i < source.length - 1; i++){
-        win.document.write('<div style="text-align: center"><img src="' + 'data:image/png;base64,' + source[i] + '"/></div><div style = "height:0; page-break-after: always"></div>')
+    const printCSS = 
+    `
+    <style>
+      @page {
+        margin-right: 20px;
+        margin-left: 10px;
       }
-      // Add last image, print and close the new window
-      win.document.write('<div style="text-align: center"><img style="text-align: center" src="' + 'data:image/png;base64,' + source[source.length-1] + '" onload="window.print();window.close()" /></div>')
-    //}
+    </style>
+    `
+    win.document.write(printCSS)
+
+    // Add html template as new page to new window
+    for(let i = 0; i < source.length - 1; i++){
+      win.document.write('<div style="text-align: center"><img src="' + 'data:image/png;base64,' + source[i] + '"/></div><div style = "height:0; page-break-after: always"></div>')
+    }
+    // Add last image, print and close the new window
+    win.document.write('<div style="text-align: center"><img style="text-align: center" src="' + 'data:image/png;base64,' + source[source.length-1] + '" onload="window.print();window.close()" /></div>')
+
     win.focus()
   }
 </script>
@@ -52,7 +57,6 @@
     </div>
   </div>
 </div>
-        {% comment %} {{button_template|safe}} {% endcomment %}
 
 <!--Preview Images-->
 {% for img in image%}

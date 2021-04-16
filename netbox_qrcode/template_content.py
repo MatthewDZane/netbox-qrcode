@@ -51,7 +51,7 @@ class QRCode(PluginTemplateExtension):
             text = '\n'.join(text)
 
             # Create qr text with image size and text
-            text_img = get_qr_text(qr_img.size, text, 'ArialMT')
+            text_img = get_qr_text(qr_img.size, text, config.get('font'))
 
             # Combine qr image and qr text 
             qr_with_text = get_concat(qr_img, text_img)
@@ -66,7 +66,7 @@ class QRCode(PluginTemplateExtension):
 
             # Save image without text to container
             file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(getattr(obj, text_fields[0], 'default'))
-            resize_width_height = (90,90)
+            resize_width_height = (100,100)
             qr_img = qr_img.resize(resize_width_height)
             qr_img.save(file_path)
 
