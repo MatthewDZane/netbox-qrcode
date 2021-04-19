@@ -29,9 +29,8 @@ def get_img_b64(img):
     return str(base64.b64encode(stream.getvalue()), encoding='ascii')
 
 
-def get_qr_text(size, text, font='ArialMT'):
+def get_qr_text(size, text, font='ArialMT', font_size=100):
     img = Image.new('L', size, 'white')
-    font_size = 100
     flag = True
     while flag:
         file_path = resource_stream(__name__, 'fonts/{}.ttf'.format(font))

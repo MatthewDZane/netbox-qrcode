@@ -427,7 +427,7 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
         rq = requests.get(image_url)
 
         # Create QR Code only for non-existing
-        if rq.status_code != 200 or True:
+        if rq.status_code != 200:
             numReloaded += 1
 
             url = request.build_absolute_uri(
