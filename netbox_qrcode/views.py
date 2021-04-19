@@ -1,4 +1,6 @@
-from django.shortcuts import get_object_or_404, redirect, render
+import requests
+
+from django.shortcuts import redirect, render
 from django.views import View
 from django_tables2 import RequestConfig
 
@@ -12,100 +14,94 @@ from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
 
 from PIL import Image
 from .utilities import *
-import requests
 
-
-config = {
-        'with_text': True,
-        'text_fields': ['name', 'asset_tag'],
-        'font': 'ArialMT',
-        'custom_text': 'PRP Nautilus',
-        'qr_version': 2,
-        'qr_error_correction': 0,
-        'qr_box_size': 3,  #2
-        'qr_border': 0,  # 3
-        'rack': {
-            'text_fields': ['name', 'site', 'facility_id', 'tenant'],
-        },
-        'device': {
-            'with_text': True,
-            'text_fields': ['name', 'asset_tag', 'serial', 'device_type'],
-        },
-        'cable': {
-            'text_fields': [
-                '_termination_a_device',
-                'termination_a',
-                '_termination_b_device',
-                'termination_b',
-                ]
-        }
-}
+from django.conf import settings
 
 
 class QRcodeDeviceView(View):
-    template_name = 'netbox_qrcode/home.html'
+    template_name = 'netbox_qrcode/devices.html'
     filterset_device = filters.SearchDeviceFilterSet
 
     def get(self, request):
         # Clear all objects in case of duplicate key violation
         QRExtendedDevice.objects.all().delete()
-        
+
         base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
 
-        # Find all current Devices and instantiates new models that provide links to photos 
+        # Find all current Devices and instantiates new models that provide links to photos
         for device in Device.objects.all().iterator():
 
             # Create device with resized url
-            url_resized ='{}resized{}.png'.format(base_url, device.name)
-            QRExtendedDevice.objects.get_or_create(name=device.name, id=device.id, device=device, status=device.status, device_role=device.device_role, device_type=device.device_type, site=device.site, rack=device.rack, photo='image-attachments/{}.png'.format(device.name), url=url_resized)
+            url_resized = '{}resized{}.png'.format(base_url, device.name)
+            QRExtendedDevice.objects.get_or_create(
+                id=device.id,
+                device=device,
+                name=device.name,
+                status=device.status,
+                device_type=device.device_type,
+                device_role=device.device_role,
+                site=device.site,
+                rack=device.rack,
+                photo='image-attachments/{}.png'.format(device.name),
+                url=url_resized
+            )
 
         # Create QuerySets from extended models
         queryset_device = QRExtendedDevice.objects.all()
 
         # Filter QuerySets
-        queryset_device = self.filterset_device(request.GET, queryset_device).qs
+        queryset_device = self.filterset_device(
+            request.GET, queryset_device).qs
 
         # Create Tables for each separate object's querysets
         table_device = QRDeviceTables(queryset_device)
 
         # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 50}).configure(table_device)
-            
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_device)
+
         # Render html with context
         return render(request, self.template_name, {
-            'table_device': table_device, 
+            'table_device': table_device,
             'filter_form': forms.SearchFilterFormDevice(
                 request.GET,
                 label_suffix=''
-            ),              
-            })
+            ),
+        })
 
-    def post(self,request):
+    def post(self, request):
 
-        # Reload all Object QR Images
-        numReloaded = reloadQRImages(request, Device, "devices")
+        # Get slider values
+        font_size = request.POST.get('font-size-range')
+        box_size = request.POST.get('box-size-range')
+        border_size = request.POST.get('border-size-range')
+
+        # Reload all Object QR Images with input parameters
+        numReloaded = reloadQRImages(request, Device, "devices", int(font_size), int(box_size), int(border_size))
 
         # Create QuerySets from extended models
         queryset_device = QRExtendedDevice.objects.all()
 
         # Filter QuerySets
-        queryset_device = self.filterset_device(request.GET, queryset_device).qs
+        queryset_device = self.filterset_device(
+            request.GET, queryset_device).qs
 
         # Create Tables for each separate object's querysets
         table_device = QRDeviceTables(queryset_device)
 
         # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 50}).configure(table_device)
-            
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_device)
+
         # Render html with context
         return render(request, self.template_name, {
-            'table_device': table_device, 
+            'table_device': table_device,
             'filter_form': forms.SearchFilterFormDevice(
                 request.GET,
                 label_suffix=''
-            ), 
+            ),
             'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Devices</div>'.format(numReloaded),
-            })
+        })
 
 
 class QRcodeRackView(View):
@@ -115,15 +111,27 @@ class QRcodeRackView(View):
     def get(self, request):
         # Clear all objects in case of duplicate key violation
         QRExtendedRack.objects.all().delete()
-        
+
         base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
 
-        # Find all current Racks and instantiates new models that provide links to photos 
+        # Find all current Racks and instantiates new models that provide links to photos
         for rack in Rack.objects.all().iterator():
 
             # Create rack with resized url
-            url_resized ='{}resized{}.png'.format(base_url, rack.name)
-            QRExtendedRack.objects.get_or_create(name=rack.name, id=rack.id, rack=rack, facility_id=rack.facility_id, status=rack.status, site=rack.site, group=rack.group, role=rack.role, type=rack.type, photo='image-attachments/{}.png'.format(rack.name),url=url_resized)
+            url_resized = '{}resized{}.png'.format(base_url, rack.name)
+            QRExtendedRack.objects.get_or_create(
+                id=rack.id,
+                rack=rack,
+                name=rack.name,
+                status=rack.status,
+                facility_id=rack.facility_id,
+                site=rack.site,
+                group=rack.group,
+                type=rack.type,
+                role=rack.role,
+                photo='image-attachments/{}.png'.format(rack.name),
+                url=url_resized
+            )
 
         # Create QuerySets from extended models
         queryset_rack = QRExtendedRack.objects.all()
@@ -135,21 +143,25 @@ class QRcodeRackView(View):
         table_rack = QRRackTables(queryset_rack)
 
         # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 25}).configure(table_rack)
+        RequestConfig(request, paginate={"per_page": 50}).configure(table_rack)
 
         # Render html with context
         return render(request, self.template_name, {
-            'table_rack': table_rack, 
+            'table_rack': table_rack,
             'filter_form': forms.SearchFilterFormRack(
                 request.GET,
                 label_suffix=''
-            ),                
-            })
+            ),
+        })
 
-    def post(self,request):
+    def post(self, request):
+        # Get slider values
+        font_size = request.POST.get('font-size-range')
+        box_size = request.POST.get('box-size-range')
+        border_size = request.POST.get('border-size-range')
 
         # Reload all Object QR Images
-        numReloaded = reloadQRImages(request, Rack, "racks")
+        numReloaded = reloadQRImages(request, Rack, "racks", int(font_size), int(box_size), int(border_size))
 
         # Create QuerySets from extended models
         queryset_rack = QRExtendedRack.objects.all()
@@ -161,16 +173,16 @@ class QRcodeRackView(View):
         table_rack = QRRackTables(queryset_rack)
 
         # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 25}).configure(table_rack)
+        RequestConfig(request, paginate={"per_page": 50}).configure(table_rack)
 
         return render(request, self.template_name, {
-            'table_rack': table_rack, 
+            'table_rack': table_rack,
             'filter_form': forms.SearchFilterFormRack(
                 request.GET,
                 label_suffix=''
-            ),  
+            ),
             'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Racks</div>'.format(numReloaded),
-            })
+        })
 
 
 class QRcodeCableView(View):
@@ -180,15 +192,25 @@ class QRcodeCableView(View):
     def get(self, request):
         # Clear all objects in case of duplicate key violation
         QRExtendedCable.objects.all().delete()
-        
+
         base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
 
-        # Find all current Cables and instantiates new models that provide links to photos 
+        # Find all current Cables and instantiates new models that provide links to photos
         for cable in Cable.objects.all().iterator():
 
             # Create cable with resized url
-            url_resized ='{}resized{}.png'.format(base_url, cable.name)
-            QRExtendedCable.objects.get_or_create(name=cable.name, id=cable.id, cable=cable, _termination_a_device=cable._termination_a_device, _termination_b_device=cable._termination_b_device, photo='image-attachments/{}.png'.format(cable.name),url=url_resized)
+            url_resized = '{}resized{}.png'.format(base_url, cable.name)
+            QRExtendedCable.objects.get_or_create(
+                id=cable.id,
+                cable=cable,
+                name=cable.name,
+                label=cable.label,
+                type=cable.type,
+                _termination_a_device=cable._termination_a_device,
+                _termination_b_device=cable._termination_b_device,
+                photo='image-attachments/{}.png'.format(cable.name),
+                url=url_resized
+            )
 
         # Create QuerySets from extended models
         queryset_cable = QRExtendedCable.objects.all()
@@ -200,21 +222,26 @@ class QRcodeCableView(View):
         table_cable = QRCableTables(queryset_cable)
 
         # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 25}).configure(table_cable)
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_cable)
 
         # Render html with context
         return render(request, self.template_name, {
-            'table_cable': table_cable, 
+            'table_cable': table_cable,
             'filter_form': forms.SearchFilterFormCable(
                 request.GET,
                 label_suffix=''
-            ),                
-            })
+            ),
+        })
 
     def post(self, request):
+        # Get slider values
+        font_size = request.POST.get('font-size-range')
+        box_size = request.POST.get('box-size-range')
+        border_size = request.POST.get('border-size-range')
 
         # Reload all Object QR Images
-        numReloaded = reloadQRImages(request, Cable, "cables")
+        numReloaded = reloadQRImages(request, Cable, "cables", int(font_size), int(box_size), int(border_size))
 
         # Create QuerySets from extended models
         queryset_cable = QRExtendedCable.objects.all()
@@ -226,18 +253,18 @@ class QRcodeCableView(View):
         table_cable = QRCableTables(queryset_cable)
 
         # Paginate Tables
-        RequestConfig(request, paginate={"per_page": 25}).configure(table_cable)
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_cable)
 
         # Render html with context
         return render(request, self.template_name, {
-            'table_cable': table_cable, 
+            'table_cable': table_cable,
             'filter_form': forms.SearchFilterFormCable(
                 request.GET,
                 label_suffix=''
-            ),   
+            ),
             'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Cables</div>'.format(numReloaded),
-            })
-
+        })
 
 
 # View for when 'Print Selected' Button Pressed
@@ -256,11 +283,12 @@ class PrintView(View):
         context['name'] = name
 
         # Switch model based on object type
-        obj_dict = {"Devices": Device , "Racks": Rack, "Cables": Cable}
+        obj_dict = {"Devices": Device, "Racks": Rack, "Cables": Cable}
         Model = obj_dict[name]
 
         # Switch table based on object type
-        table_dict = {"Devices": DeviceTable, "Racks": RackTable, "Cables": CableTable}
+        table_dict = {"Devices": DeviceTable,
+                      "Racks": RackTable, "Cables": CableTable}
         object_queryset = Model.objects.filter(pk__in=pk_list)
         context['table'] = table_dict[name](object_queryset)
 
@@ -283,7 +311,7 @@ class PrintView(View):
             i = 1
 
             while i < len(imageRow):
-                final_image = get_concat_v(final_image,imageRow[i])
+                final_image = get_concat_v(final_image, imageRow[i])
                 i += 1
 
                 # If page full, push to page image and reset current
@@ -297,20 +325,21 @@ class PrintView(View):
             if i % numRows != 0:
                 # Convert and add as page
                 image_pages.append(get_img_b64(final_image))
-        
 
             return image_pages
 
         # No text setting option selected
         if without_text:
-            base_url = request.build_absolute_uri('/') + 'media/image-attachments/noText'
+            base_url = request.build_absolute_uri(
+                '/') + 'media/image-attachments/noText'
             rowSize = 6
             numRows = 8
             horizontal_print_padding = 12
             footer_text_height = 15
         # Print with text enabled and with below settings
         else:
-            base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
+            base_url = request.build_absolute_uri(
+                '/') + 'media/image-attachments/'
             rowSize = 3
             numRows = 10
             horizontal_print_padding = 40
@@ -333,10 +362,11 @@ class PrintView(View):
                     image = add_print_padding(image, horizontal_print_padding)
                     image = add_print_padding_v(image, vertical_print_padding)
 
-                # Append info to bottom of image if no text QR
+                # Append info to bottom of image using user config font if no text QR
                 else:
                     image = add_print_padding(image, horizontal_print_padding)
-                    text_img = get_qr_text((image.width, footer_text_height), obj.name, config.get('font'))
+                    text_img = get_qr_text((image.width, footer_text_height), obj.name, settings.PLUGINS_CONFIG.get(
+                        'netbox_qrcode', {}).get('font'))
                     image = get_concat_v(image, text_img)
 
                 image_curr.append(image)
@@ -345,11 +375,11 @@ class PrintView(View):
                 if ((i+1) % rowSize) == 0 and i > 0:
                     image_rows.append(image_curr)
                     image_curr = []
-                
+
             # Append row list with remaining images if any exists
             if image_curr:
                 # Make row full for print spacing
-                for i in range(0,rowSize-len(image_curr)):
+                for i in range(0, rowSize-len(image_curr)):
                     blank = Image.new('L', image.size, 'white')
                     image_curr.append(blank)
                 image_rows.append(image_curr)
@@ -359,8 +389,8 @@ class PrintView(View):
 
                 # Combine images in single row into one image
                 first_image = row[0]
-                for i in range(1,len(row)):
-                    first_image = get_concat(first_image,row[i])
+                for i in range(1, len(row)):
+                    first_image = get_concat(first_image, row[i])
 
                 image_rows_combined.append(first_image)
 
@@ -368,10 +398,10 @@ class PrintView(View):
             context['image'] = combine_rows(image_rows_combined, numRows)
 
             return render(request, self.template_name, context)
-            
-        # No images selected, redirect to qrcode menu page
+
+        # No images selected, split current path to remove /print and redirect back to respective object page
         else:
-            return redirect('/plugins/netbox_qrcode/devices')
+            return redirect('/'.join(self.request.path_info.split('/')[:-2]))
 
 
 """
@@ -381,20 +411,42 @@ Creates QRcode image with text, without text, and thumbsized for netbox objects 
 :param objName:  netbox object string name
 :return: number of object images created
 """
-def reloadQRImages(request, Model, objName):
+
+
+def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_size=0):
+
+    # Collect User Config and make copy
+    config = settings.PLUGINS_CONFIG.get('netbox_qrcode', {}).copy()
 
     numReloaded = 0
     for obj in Model.objects.all().iterator():
 
         # Check if qrcode already exists
-        image_url = request.build_absolute_uri('/') + 'media/image-attachments/{}.png'.format(obj.name)
+        image_url = request.build_absolute_uri(
+            '/') + 'media/image-attachments/{}.png'.format(obj.name)
         rq = requests.get(image_url)
 
-        # Create QR Code only for non-existing  
-        if rq.status_code != 200:
+        # Create QR Code only for non-existing
+        if rq.status_code != 200 or True:
             numReloaded += 1
 
-            url = request.build_absolute_uri('/') + 'dcim/{}/{}'.format(objName, obj.pk)
+            url = request.build_absolute_uri(
+                '/') + 'dcim/{}/{}'.format(objName, obj.pk)
+
+            # Get object config settings
+            obj_cfg = config.get(objName[:-1])
+            if obj_cfg is None:
+                return ''
+            # and override default config
+            config.update(obj_cfg)
+
+            # Override User Config with print settings
+            printConfig = {}
+            printConfig['qr_box_size']= box_size
+            printConfig['qr_border']= border_size
+
+            config.update(printConfig)
+
             qr_args = {}
             for k, v in config.items():
                 if k.startswith('qr_'):
@@ -417,7 +469,8 @@ def reloadQRImages(request, Model, objName):
                         if cfn:
                             try:
                                 if getattr(obj, text_field).get(cfn):
-                                    text.append('{}'.format(getattr(obj, text_field).get(cfn)))
+                                    text.append('{}'.format(
+                                        getattr(obj, text_field).get(cfn)))
                             except AttributeError:
                                 pass
                         else:
@@ -428,26 +481,29 @@ def reloadQRImages(request, Model, objName):
                 text = '\n'.join(text)
 
                 # Create qr text with image size and text
-                text_img = get_qr_text(qr_img.size, text, config.get('font'))
+                text_img = get_qr_text(qr_img.size, text, config.get('font'), font_size)
 
-                # Combine qr image and qr text 
+                # Combine qr image and qr text
                 qr_with_text = get_concat(qr_img, text_img)
-                
+
                 # Save image with text to container with object's first field name
                 text_fields = config.get('text_fields', [])
-                file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(getattr(obj, text_fields[0], 'default'))
+                file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(
+                    getattr(obj, text_fields[0], 'default'))
                 qr_with_text.save(file_path)
 
                 # Save image without text to container
-                file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(getattr(obj, text_fields[0], 'default'))
-                resize_width_height = (100,100)
+                file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(
+                    getattr(obj, text_fields[0], 'default'))
+                resize_width_height = (100, 100)
                 qr_img = qr_img.resize(resize_width_height)
                 qr_img.save(file_path)
 
                 # Resize final image for thumbnails and save
-                resize_width_height = (120,50)
+                resize_width_height = (120, 50)
                 qr_with_text = qr_with_text.resize(resize_width_height)
-                file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(getattr(obj, text_fields[0], 'default'))
+                file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(
+                    getattr(obj, text_fields[0], 'default'))
                 qr_with_text.save(file_path)
 
     return numReloaded

@@ -59,23 +59,6 @@ class QRCode(PluginTemplateExtension):
             # Convert png to base 64 image
             img = get_img_b64(qr_with_text)
             
-            # Save image with text to container with object's first field name
-            text_fields = config.get('text_fields', [])
-            file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(getattr(obj, text_fields[0], 'default'))
-            qr_with_text.save(file_path)
-
-            # Save image without text to container
-            file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(getattr(obj, text_fields[0], 'default'))
-            resize_width_height = (100,100)
-            qr_img = qr_img.resize(resize_width_height)
-            qr_img.save(file_path)
-
-            # Resize final image for thumbnails and save
-            resize_width_height = (150,75)
-            qr_with_text = qr_with_text.resize(resize_width_height)
-            file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(getattr(obj, text_fields[0], 'default'))
-            qr_with_text.save(file_path)
-
         else:
             img = get_img_b64(qr_img)
         try:

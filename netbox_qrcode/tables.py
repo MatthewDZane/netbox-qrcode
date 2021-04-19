@@ -1,36 +1,16 @@
 import django_tables2 as tables
-from utilities.tables import BaseTable, ChoiceFieldColumn, ColoredLabelColumn
+from utilities.tables import BaseTable, ChoiceFieldColumn, ColoredLabelColumn, ToggleColumn
 from dcim.models import Device, Rack, Site, Cable
 from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
+
 from django.utils.safestring import mark_safe
-
-class ToggleColumn(tables.CheckBoxColumn):
-    """
-    Extend CheckBoxColumn to add a "toggle all" checkbox in the column header.
-    """
-    def __init__(self, *args, **kwargs):
-        default = kwargs.pop('default', '')
-        visible = kwargs.pop('visible', True)
-        if 'attrs' not in kwargs:
-            kwargs['attrs'] = {
-                'td': {
-                    'class': 'min-width'
-                }
-            }
-        super().__init__(*args, default=default, visible=visible, **kwargs)
-
-    @property
-    def header(self):
-        return mark_safe('<input type="checkbox" class="toggle" title="Toggle all" />')
-
-
 
 # Device Table
 class QRDeviceTables(BaseTable):
     """Table for displaying Device objects."""
 
     # Set up hyperlinks to column items
-    pk = ToggleColumn()
+    pk = ToggleColumn(visible=True)
     device = tables.LinkColumn()
     status = ChoiceFieldColumn()
     device_role = ColoredLabelColumn()
@@ -38,7 +18,7 @@ class QRDeviceTables(BaseTable):
     rack = tables.LinkColumn()
     site = tables.LinkColumn()
     id = tables.LinkColumn()
-    qrcode = tables.TemplateColumn('<img src="{{record.url}}"> ')
+    url = tables.TemplateColumn('<img src="{{record.url}}"> ', verbose_name = 'QR Code')
 
     # Netbox base table class, fields display column names/order
     class Meta(BaseTable.Meta):
@@ -53,7 +33,7 @@ class QRDeviceTables(BaseTable):
             "site",
             "id",
             "photo",
-            "qrcode",
+            "url",
         )
 
 # Rack Table
@@ -61,14 +41,14 @@ class QRRackTables(BaseTable):
     """Table for displaying Rack objects."""
 
     # Set up hyperlinks to column items
-    pk = ToggleColumn()
+    pk = ToggleColumn(visible=True)
     rack = tables.LinkColumn()
     status = ChoiceFieldColumn()
     site = tables.LinkColumn()
     group = tables.LinkColumn()
     role = ColoredLabelColumn()
     id = tables.LinkColumn()
-    qrcode = tables.TemplateColumn('<img src="{{record.url}}"> ')
+    url = tables.TemplateColumn('<img src="{{record.url}}"> ', verbose_name = 'QR Code')
 
     # Netbox base table class, fields display column names/order
     class Meta(BaseTable.Meta):
@@ -76,13 +56,14 @@ class QRRackTables(BaseTable):
         fields = (
             "pk",
             "rack",
-            "status",
             "site",
             "group",
+            "status",
+            "facility_id",
             "role",
             "id",
             "photo",
-            "qrcode",
+            "url",
         )
 
 # Cable Table
@@ -90,10 +71,11 @@ class QRCableTables(BaseTable):
     """Table for displaying Cable objects."""
 
     # Set up hyperlinks to column items
-    pk = ToggleColumn()
+    pk = ToggleColumn(visible=True)
     cable = tables.LinkColumn()
+    status = ChoiceFieldColumn()
     id = tables.LinkColumn()
-    qrcode = tables.TemplateColumn('<img src="{{record.url}}"> ')
+    url = tables.TemplateColumn('<img src="{{record.url}}"> ', verbose_name = 'QR Code')
 
     # Netbox base table class, fields display column names/order
     class Meta(BaseTable.Meta):
@@ -101,7 +83,11 @@ class QRCableTables(BaseTable):
         fields = (
             "pk",
             "cable",
+            "label",
+            "status",
+            "_termination_a_device",
+            "_termination_a_device",
             "id",
             "photo",
-            "qrcode",
+            "url",
         )

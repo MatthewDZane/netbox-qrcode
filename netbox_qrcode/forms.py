@@ -1,32 +1,40 @@
 from django import forms
-from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, DeviceType, RackGroup, RackRole, Manufacturer
-from dcim.choices import DeviceStatusChoices
+from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, RackGroup, RackRole, Manufacturer
+from dcim.choices import DeviceStatusChoices, RackStatusChoices, RackTypeChoices, CableStatusChoices, CableTypeChoices
 
-from utilities.forms import DynamicModelMultipleChoiceField, StaticSelect2Multiple
-from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
+from utilities.forms import DynamicModelMultipleChoiceField, StaticSelect2Multiple, DynamicModelChoiceField
 
 
-class SearchFilterFormDevice(forms.Form):
-
-    model = QRExtendedDevice
-
+class BaseFilterForm(forms.Form):
     q = forms.CharField(
         required=False,
         label='Search'
     )
-
     region = DynamicModelMultipleChoiceField(
         queryset=Region.objects.all(),
         to_field_name='slug',
-        required=False
+        required=False,
+        initial_params={
+            'sites': '$site'
+        }
     )
+    site = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        to_field_name='slug',
+        required=False,
+        query_params={
+            'region': '$region'
+        }
+    )
+
+
+class SearchFilterFormDevice(BaseFilterForm):
 
     status = forms.MultipleChoiceField(
         choices=DeviceStatusChoices,
         required=False,
         widget=StaticSelect2Multiple()
     )
-
     device_id = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         to_field_name='id',
@@ -40,15 +48,6 @@ class SearchFilterFormDevice(forms.Form):
         label='Rack',
         null_option='None',
     )
-
-    site = DynamicModelMultipleChoiceField(
-        queryset=Site.objects.all(),
-        to_field_name='slug',
-        required=False,
-        query_params={
-            'region': '$region'
-        }
-    )
     manufacturer = DynamicModelMultipleChoiceField(
         queryset=Manufacturer.objects.all(),
         to_field_name='slug',
@@ -56,38 +55,46 @@ class SearchFilterFormDevice(forms.Form):
         label='Manufacturer'
     )
 
-    device_type_id = DynamicModelMultipleChoiceField(
-        queryset=DeviceType.objects.all(),
+
+class SearchFilterFormRack(BaseFilterForm):
+
+    status = forms.MultipleChoiceField(
+        choices=RackStatusChoices,
         required=False,
-        label='Model',
-        display_field='model',
-        query_params={
-            'manufacturer': '$manufacturer'
-        }
+        widget=StaticSelect2Multiple()
     )
-
-class SearchFilterFormRack(forms.Form):
-
-    model = QRExtendedRack
-    
-    rack_id = DynamicModelMultipleChoiceField(
-        queryset=Rack.objects.all(),
+    group_id = DynamicModelMultipleChoiceField(
+        queryset=RackGroup.objects.all(),
         required=False,
-        label='Rack',
+        label='Rack group',
         null_option='None',
-    )
-
-    site = DynamicModelMultipleChoiceField(
-        queryset=Site.objects.all(),
-        to_field_name='slug',
-        required=False,
         query_params={
-            'region': '$region'
+            'site': '$site'
         }
     )
+    type = forms.MultipleChoiceField(
+        choices=RackTypeChoices,
+        required=False,
+        widget=StaticSelect2Multiple()
+    )
+    role = DynamicModelChoiceField(
+        queryset=RackRole.objects.all(),
+        required=False
+    )
+
 
 class SearchFilterFormCable(forms.Form):
-
-    model = QRExtendedCable
-    
-
+    q = forms.CharField(
+        required=False,
+        label='Search'
+    )
+    status = forms.MultipleChoiceField(
+        choices=CableStatusChoices,
+        required=False,
+        widget=StaticSelect2Multiple()
+    )
+    type = forms.MultipleChoiceField(
+        choices=CableTypeChoices,
+        required=False,
+        widget=StaticSelect2Multiple()
+    )

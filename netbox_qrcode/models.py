@@ -3,16 +3,13 @@ from django.db import models
 from django.urls import reverse
 
 from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, DeviceType, RackGroup, RackRole, Manufacturer
-from dcim.choices import DeviceStatusChoices, RackStatusChoices
+from dcim.choices import DeviceStatusChoices, RackStatusChoices, CableStatusChoices, RackTypeChoices, CableTypeChoices
 from ipam.choices import *
 
-# Abstract class which extended devices extend from
+
+# Abstract class which extended objects extend from
 class QRObject(models.Model):
-    name = models.CharField(
-        max_length=64,
-        blank=True,
-        null=True
-    )
+
     photo = models.ImageField(upload_to='image-attachments/')
     url = models.URLField(default='', max_length=200)
 
@@ -23,12 +20,16 @@ class QRObject(models.Model):
 class QRExtendedDevice(QRObject):
     device = models.ForeignKey(to="dcim.Device", on_delete=models.CASCADE, null=True)
 
+    name = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True
+    )
     status = models.CharField(
         max_length=50,
         choices=DeviceStatusChoices,
         default=DeviceStatusChoices.STATUS_ACTIVE
     )
-
     device_type = models.ForeignKey(
         to='dcim.DeviceType',
         on_delete=models.CASCADE,
@@ -59,13 +60,14 @@ class QRExtendedDevice(QRObject):
     )
     # Set link for id column in QRDeviceTable to be the return url formatted with device's pk
     def get_absolute_url(self):
-        return 'https://netbox.nrp-nautilus.io/dcim/devices/{}/'.format(self.device.pk)
+        return reverse('dcim:device', args=[self.device.pk])
     def get_status_class(self):
         return DeviceStatusChoices.CSS_CLASSES.get(self.status)
 
 # Racks Wrapper
 class QRExtendedRack(QRObject):
     rack = models.ForeignKey(to="dcim.Rack", on_delete=models.CASCADE, null=True)
+
     name = models.CharField(
         max_length=100,
         blank=True,
@@ -75,6 +77,13 @@ class QRExtendedRack(QRObject):
         max_length=50,
         choices=RackStatusChoices,
         default=RackStatusChoices.STATUS_ACTIVE
+    )
+    facility_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name='Facility ID',
+        help_text='Locally-assigned identifier'
     )
     site = models.ForeignKey(
         to='dcim.Site',
@@ -99,14 +108,53 @@ class QRExtendedRack(QRObject):
         null=True,
         help_text='Functional role'
     )
+    type = models.CharField(
+        choices=RackTypeChoices,
+        max_length=50,
+        blank=True,
+        verbose_name='Type'
+    )
+
     def get_absolute_url(self):
-        return 'https://netbox.nrp-nautilus.io/dcim/racks/{}/'.format(self.rack.pk)
+        return reverse('dcim:rack', args=[self.rack.pk])
     def get_status_class(self):
         return RackStatusChoices.CSS_CLASSES.get(self.status)
 
 # Cables Wrapper
 class QRExtendedCable(QRObject):
     cable = models.ForeignKey(to="dcim.Cable", on_delete=models.CASCADE, null=True)
+    
+    label = models.CharField(
+        max_length=100,
+        blank=True
+    )
+    status = models.CharField(
+        max_length=50,
+        choices=CableStatusChoices,
+        default=CableStatusChoices.STATUS_CONNECTED
+    )
+    type = models.CharField(
+        max_length=50,
+        choices=CableTypeChoices,
+        blank=True
+    )
+    _termination_a_device = models.ForeignKey(
+        to=Device,
+        on_delete=models.CASCADE,
+        related_name='+',
+        blank=True,
+        null=True
+    )
+    _termination_b_device = models.ForeignKey(
+        to=Device,
+        on_delete=models.CASCADE,
+        related_name='+',
+        blank=True,
+        null=True
+    )
 
     def get_absolute_url(self):
-        return 'https://netbox.nrp-nautilus.io/dcim/cables/{}/'.format(self.cable.pk)
+        return reverse('dcim:cable', args=[self.cable.pk])
+    def get_status_class(self):
+        return CableStatusChoices.CSS_CLASSES.get(self.status)
+
