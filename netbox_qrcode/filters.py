@@ -1,7 +1,7 @@
 import django_filters
 from django.db import models
 
-from dcim.models import Device, Site, Region, Rack, DeviceRole, DeviceType, Manufacturer, RackGroup, RackRole
+from dcim.models import Device, Site, Region, Rack, DeviceRole, DeviceType, Manufacturer, RackRole
 from dcim.choices import DeviceStatusChoices, RackStatusChoices, RackTypeChoices, RackWidthChoices, CableStatusChoices, CableTypeChoices
 
 from utilities.choices import ColorChoices
@@ -70,13 +70,6 @@ class SearchRackFilterSet(BaseFiltersSet):
     status = django_filters.MultipleChoiceFilter(
         choices=RackStatusChoices,
         null_value=None
-    )
-    group = TreeNodeMultipleChoiceFilter(
-        queryset=RackGroup.objects.all(),
-        field_name='group',
-        lookup_expr='in',
-        to_field_name='slug',
-        label='Rack group (slug)',
     )
     type = django_filters.MultipleChoiceFilter(
         choices=RackTypeChoices

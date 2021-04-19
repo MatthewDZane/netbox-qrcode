@@ -2,7 +2,7 @@
 from django.db import models
 from django.urls import reverse
 
-from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, DeviceType, RackGroup, RackRole, Manufacturer
+from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, DeviceType, RackRole, Manufacturer
 from dcim.choices import DeviceStatusChoices, RackStatusChoices, CableStatusChoices, RackTypeChoices, CableTypeChoices
 from ipam.choices import *
 
@@ -91,14 +91,6 @@ class QRExtendedRack(QRObject):
         related_name='+',
         blank=True,
         null=True
-    )
-    group = models.ForeignKey(
-        to='dcim.RackGroup',
-        on_delete=models.SET_NULL,
-        related_name='+',
-        blank=True,
-        null=True,
-        help_text='Assigned group'
     )
     role = models.ForeignKey(
         to='dcim.RackRole',

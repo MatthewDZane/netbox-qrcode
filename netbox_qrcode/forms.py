@@ -1,5 +1,5 @@
 from django import forms
-from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, RackGroup, RackRole, Manufacturer
+from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, RackRole, Manufacturer
 from dcim.choices import DeviceStatusChoices, RackStatusChoices, RackTypeChoices, CableStatusChoices, CableTypeChoices
 
 from utilities.forms import DynamicModelMultipleChoiceField, StaticSelect2Multiple, DynamicModelChoiceField
@@ -62,15 +62,6 @@ class SearchFilterFormRack(BaseFilterForm):
         choices=RackStatusChoices,
         required=False,
         widget=StaticSelect2Multiple()
-    )
-    group_id = DynamicModelMultipleChoiceField(
-        queryset=RackGroup.objects.all(),
-        required=False,
-        label='Rack group',
-        null_option='None',
-        query_params={
-            'site': '$site'
-        }
     )
     type = forms.MultipleChoiceField(
         choices=RackTypeChoices,
