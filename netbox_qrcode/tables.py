@@ -45,7 +45,6 @@ class QRRackTables(BaseTable):
     rack = tables.LinkColumn()
     status = ChoiceFieldColumn()
     site = tables.LinkColumn()
-    group = tables.LinkColumn()
     role = ColoredLabelColumn()
     id = tables.LinkColumn()
     url = tables.TemplateColumn('<img src="{{record.url}}"> ', verbose_name = 'QR Code')
@@ -57,7 +56,6 @@ class QRRackTables(BaseTable):
             "pk",
             "rack",
             "site",
-            "group",
             "status",
             "facility_id",
             "role",
