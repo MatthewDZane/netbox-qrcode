@@ -6,6 +6,8 @@ dist
 build
 *.egg-info
 
+# Plugin Development
 *.lock
 *.toml
 tasks.py
+migrations/

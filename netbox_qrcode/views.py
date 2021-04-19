@@ -124,7 +124,6 @@ class QRcodeRackView(View):
                 rack=rack,
                 name=rack.name,
                 status=rack.status,
-                facility_id=rack.facility_id,
                 site=rack.site,
                 type=rack.type,
                 role=rack.role,

@@ -78,13 +78,6 @@ class QRExtendedRack(QRObject):
         choices=RackStatusChoices,
         default=RackStatusChoices.STATUS_ACTIVE
     )
-    facility_id = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        verbose_name='Facility ID',
-        help_text='Locally-assigned identifier'
-    )
     site = models.ForeignKey(
         to='dcim.Site',
         on_delete=models.CASCADE,
