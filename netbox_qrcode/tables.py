@@ -80,7 +80,7 @@ class QRCableTables(BaseTable):
         fields = (
             "pk",
             "cable",
-            "label",
+            # "label",
             # "status",
             # "_termination_a_device",
             # "_termination_a_device",
