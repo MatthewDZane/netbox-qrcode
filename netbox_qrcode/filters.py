@@ -97,9 +97,9 @@ class SearchCableFilterSet(django_filters.FilterSet):
         method='search',
         label='Search',
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=CableStatusChoices
-    )
+    # status = django_filters.MultipleChoiceFilter(
+    #     choices=CableStatusChoices
+    # )
     type = django_filters.MultipleChoiceFilter(
         choices=CableTypeChoices
     )

@@ -79,11 +79,11 @@ class SearchFilterFormCable(forms.Form):
         required=False,
         label='Search'
     )
-    status = forms.MultipleChoiceField(
-        choices=CableStatusChoices,
-        required=False,
-        widget=StaticSelect2Multiple()
-    )
+    # status = forms.MultipleChoiceField(
+    #     choices=CableStatusChoices,
+    #     required=False,
+    #     widget=StaticSelect2Multiple()
+    # )
     type = forms.MultipleChoiceField(
         choices=CableTypeChoices,
         required=False,

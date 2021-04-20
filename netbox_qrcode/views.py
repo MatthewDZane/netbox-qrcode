@@ -201,7 +201,7 @@ class QRcodeCableView(View):
                 id=cable.id,
                 cable=cable,
                 name=cable.name,
-                status=cable.status,
+                # status=cable.status,
                 type=cable.type,
                 _termination_a_device=cable._termination_a_device,
                 _termination_b_device=cable._termination_b_device,

@@ -114,11 +114,11 @@ class QRExtendedCable(QRObject):
     #     max_length=100,
     #     blank=True
     # )
-    status = models.CharField(
-        max_length=50,
-        choices=CableStatusChoices,
-        default=CableStatusChoices.STATUS_CONNECTED
-    )
+    # status = models.CharField(
+    #     max_length=50,
+    #     choices=CableStatusChoices,
+    #     default=CableStatusChoices.STATUS_CONNECTED
+    # )
     type = models.CharField(
         max_length=50,
         choices=CableTypeChoices,

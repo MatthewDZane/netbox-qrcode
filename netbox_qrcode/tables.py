@@ -70,7 +70,7 @@ class QRCableTables(BaseTable):
     # Set up hyperlinks to column items
     pk = ToggleColumn(visible=True)
     cable = tables.LinkColumn()
-    status = ChoiceFieldColumn()
+    # status = ChoiceFieldColumn()
     id = tables.LinkColumn()
     url = tables.TemplateColumn('<img src="{{record.url}}"> ', verbose_name = 'QR Code')
 
@@ -81,7 +81,7 @@ class QRCableTables(BaseTable):
             "pk",
             "cable",
             "label",
-            "status",
+            # "status",
             "_termination_a_device",
             "_termination_a_device",
             "id",
