@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dcim', '0130_sitegroup'),
+        ('dcim', '0122_standardize_name_length'),
         ('netbox_qrcode', '0002_auto_20210420_0042'),
     ]
 
