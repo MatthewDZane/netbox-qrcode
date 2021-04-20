@@ -125,20 +125,20 @@ class QRExtendedCable(QRObject):
     #     blank=True,
     #     null=True
     # )
-    _termination_a_device = models.ForeignKey(
-        to=Device,
-        on_delete=models.CASCADE,
-        related_name='+',
-        blank=True,
-        null=True
-    )
-    _termination_b_device = models.ForeignKey(
-        to=Device,
-        on_delete=models.CASCADE,
-        related_name='+',
-        blank=True,
-        null=True
-    )
+    # _termination_a_device = models.ForeignKey(
+    #     to=Device,
+    #     on_delete=models.CASCADE,
+    #     related_name='+',
+    #     blank=True,
+    #     null=True
+    # )
+    # _termination_b_device = models.ForeignKey(
+    #     to=Device,
+    #     on_delete=models.CASCADE,
+    #     related_name='+',
+    #     blank=True,
+    #     null=True
+    # )
 
     def get_absolute_url(self):
         return reverse('dcim:cable', args=[self.cable.pk])

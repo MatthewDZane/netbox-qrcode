@@ -203,8 +203,8 @@ class QRcodeCableView(View):
                 name=cable.name,
                 # status=cable.status,
                 # type=cable.type,
-                _termination_a_device=cable._termination_a_device,
-                _termination_b_device=cable._termination_b_device,
+                # _termination_a_device=cable._termination_a_device,
+                # _termination_b_device=cable._termination_b_device,
                 photo='image-attachments/{}.png'.format(cable.name),
                 url=url_resized
             )
@@ -424,7 +424,7 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
         rq = requests.get(image_url)
 
         # Create QR Code only for non-existing
-        if rq.status_code != 200:
+        if rq.status_code != 200 or True:
             numReloaded += 1
 
             url = request.build_absolute_uri(
