@@ -100,9 +100,9 @@ class SearchCableFilterSet(django_filters.FilterSet):
     # status = django_filters.MultipleChoiceFilter(
     #     choices=CableStatusChoices
     # )
-    type = django_filters.MultipleChoiceFilter(
-        choices=CableTypeChoices
-    )
+    # type = django_filters.MultipleChoiceFilter(
+    #     choices=CableTypeChoices
+    # )
 
     class Meta:
         model = QRExtendedCable

@@ -119,12 +119,12 @@ class QRExtendedCable(QRObject):
     #     choices=CableStatusChoices,
     #     default=CableStatusChoices.STATUS_CONNECTED
     # )
-    type = models.CharField(
-        max_length=50,
-        choices=CableTypeChoices,
-        blank=True,
-        null=True
-    )
+    # type = models.CharField(
+    #     max_length=50,
+    #     choices=CableTypeChoices,
+    #     blank=True,
+    #     null=True
+    # )
     _termination_a_device = models.ForeignKey(
         to=Device,
         on_delete=models.CASCADE,

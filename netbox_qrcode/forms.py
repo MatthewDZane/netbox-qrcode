@@ -84,8 +84,8 @@ class SearchFilterFormCable(forms.Form):
     #     required=False,
     #     widget=StaticSelect2Multiple()
     # )
-    type = forms.MultipleChoiceField(
-        choices=CableTypeChoices,
-        required=False,
-        widget=StaticSelect2Multiple()
-    )
+    # type = forms.MultipleChoiceField(
+    #     choices=CableTypeChoices,
+    #     required=False,
+    #     widget=StaticSelect2Multiple()
+    # )
