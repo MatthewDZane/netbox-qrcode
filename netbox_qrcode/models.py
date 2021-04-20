@@ -87,7 +87,7 @@ class QRExtendedRack(QRObject):
     )
     role = models.ForeignKey(
         to='dcim.RackRole',
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='+',
         blank=True,
         null=True,
@@ -97,6 +97,7 @@ class QRExtendedRack(QRObject):
         choices=RackTypeChoices,
         max_length=50,
         blank=True,
+        null=True,
         verbose_name='Type'
     )
 
@@ -121,7 +122,8 @@ class QRExtendedCable(QRObject):
     type = models.CharField(
         max_length=50,
         choices=CableTypeChoices,
-        blank=True
+        blank=True,
+        null=True
     )
     _termination_a_device = models.ForeignKey(
         to=Device,
