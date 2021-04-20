@@ -110,10 +110,10 @@ class QRExtendedRack(QRObject):
 class QRExtendedCable(QRObject):
     cable = models.ForeignKey(to="dcim.Cable", on_delete=models.CASCADE, null=True)
     
-    # label = models.CharField(
-    #     max_length=100,
-    #     blank=True
-    # )
+    label = models.CharField(
+        max_length=100,
+        blank=True
+    )
     # status = models.CharField(
     #     max_length=50,
     #     choices=CableStatusChoices,
