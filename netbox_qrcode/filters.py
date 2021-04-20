@@ -71,9 +71,9 @@ class SearchRackFilterSet(BaseFiltersSet):
         choices=RackStatusChoices,
         null_value=None
     )
-    type = django_filters.MultipleChoiceFilter(
-        choices=RackTypeChoices
-    )
+    # type = django_filters.MultipleChoiceFilter(
+    #     choices=RackTypeChoices
+    # )
     role = django_filters.ModelMultipleChoiceFilter(
         field_name='role__slug',
         queryset=RackRole.objects.all(),

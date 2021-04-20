@@ -63,11 +63,11 @@ class SearchFilterFormRack(BaseFilterForm):
         required=False,
         widget=StaticSelect2Multiple()
     )
-    type = forms.MultipleChoiceField(
-        choices=RackTypeChoices,
-        required=False,
-        widget=StaticSelect2Multiple()
-    )
+    # type = forms.MultipleChoiceField(
+    #     choices=RackTypeChoices,
+    #     required=False,
+    #     widget=StaticSelect2Multiple()
+    # )
     role = DynamicModelChoiceField(
         queryset=RackRole.objects.all(),
         required=False

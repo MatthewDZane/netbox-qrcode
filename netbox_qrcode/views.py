@@ -125,7 +125,6 @@ class QRcodeRackView(View):
                 name=rack.name,
                 status=rack.status,
                 site=rack.site,
-                type=rack.type,
                 role=rack.role,
                 photo='image-attachments/{}.png'.format(rack.name),
                 url=url_resized
@@ -202,7 +201,6 @@ class QRcodeCableView(View):
                 id=cable.id,
                 cable=cable,
                 name=cable.name,
-                label=cable.label,
                 type=cable.type,
                 _termination_a_device=cable._termination_a_device,
                 _termination_b_device=cable._termination_b_device,
