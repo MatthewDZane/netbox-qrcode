@@ -77,7 +77,8 @@ class QRcodeDeviceView(View):
         border_size = request.POST.get('border-size-range')
 
         # Reload all Object QR Images with input parameters
-        numReloaded = reloadQRImages(request, Device, "devices", int(font_size), int(box_size), int(border_size))
+        numReloaded = reloadQRImages(request, Device, "devices", int(
+            font_size), int(box_size), int(border_size))
 
         # Create QuerySets from extended models
         queryset_device = QRExtendedDevice.objects.all()
@@ -158,7 +159,8 @@ class QRcodeRackView(View):
         border_size = request.POST.get('border-size-range')
 
         # Reload all Object QR Images
-        numReloaded = reloadQRImages(request, Rack, "racks", int(font_size), int(box_size), int(border_size))
+        numReloaded = reloadQRImages(request, Rack, "racks", int(
+            font_size), int(box_size), int(border_size))
 
         # Create QuerySets from extended models
         queryset_rack = QRExtendedRack.objects.all()
@@ -239,7 +241,8 @@ class QRcodeCableView(View):
         border_size = request.POST.get('border-size-range')
 
         # Reload all Object QR Images
-        numReloaded = reloadQRImages(request, Cable, "cables", int(font_size), int(box_size), int(border_size))
+        numReloaded = reloadQRImages(request, Cable, "cables", int(
+            font_size), int(box_size), int(border_size))
 
         # Create QuerySets from extended models
         queryset_cable = QRExtendedCable.objects.all()
@@ -332,16 +335,19 @@ class PrintView(View):
                 '/') + 'media/image-attachments/noText'
             rowSize = 6
             numRows = 8
-            horizontal_print_padding = 12
-            footer_text_height = 15
+            horizontal_print_padding = 40
+            footer_text_height = 20
+            text_padding = 10
+            context['without_text'] = 1
         # Print with text enabled and with below settings
         else:
             base_url = request.build_absolute_uri(
                 '/') + 'media/image-attachments/'
             rowSize = 3
             numRows = 10
-            horizontal_print_padding = 40
-            vertical_print_padding = 3
+            horizontal_print_padding = 100
+            vertical_print_padding = 5
+            context['without_text'] = 0
 
         # Multiple selected, account for multi page print
         if image_count > 0:
@@ -355,22 +361,21 @@ class PrintView(View):
                 url = '{}{}.png'.format(base_url, obj.name)
                 image = Image.open(requests.get(url, stream=True).raw)
 
-                # Resize text Qr
-                if not without_text:
-                    image = add_print_padding(image, horizontal_print_padding)
-                    image = add_print_padding_v(image, vertical_print_padding)
-
                 # Append info to bottom of image using user config font if no text QR
-                else:
-                    image = add_print_padding(image, horizontal_print_padding)
+                if without_text:
                     text_img = get_qr_text((image.width, footer_text_height), obj.name, settings.PLUGINS_CONFIG.get(
                         'netbox_qrcode', {}).get('font'))
+                    text_img = add_print_padding_v(text_img, text_padding)
                     image = get_concat_v(image, text_img)
+
+                # Resize text Qr
+                else:
+                    image = add_print_padding_v(image, vertical_print_padding)
 
                 image_curr.append(image)
 
                 # If row full, push to row list and reset current
-                if ((i+1) % rowSize) == 0 and i > 0:
+                if ((i+1) % rowSize) == 0:
                     image_rows.append(image_curr)
                     image_curr = []
 
@@ -388,6 +393,10 @@ class PrintView(View):
                 # Combine images in single row into one image
                 first_image = row[0]
                 for i in range(1, len(row)):
+                    # If no text, add padding to middle images only
+                    row[i] = add_print_padding(
+                        row[i], horizontal_print_padding)
+
                     first_image = get_concat(first_image, row[i])
 
                 image_rows_combined.append(first_image)
@@ -424,8 +433,8 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
             '/') + 'media/image-attachments/{}.png'.format(obj.name)
         rq = requests.get(image_url)
 
-        # Create QR Code only for non-existing
-        if rq.status_code != 200 or True:
+        # Create QR Code only for non-existing or if forced
+        if rq.status_code != 200 or request.POST.get('force-reload-all'):
             numReloaded += 1
 
             url = request.build_absolute_uri(
@@ -440,8 +449,8 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
 
             # Override User Config with print settings
             printConfig = {}
-            printConfig['qr_box_size']= box_size
-            printConfig['qr_border']= border_size
+            printConfig['qr_box_size'] = box_size
+            printConfig['qr_border'] = border_size
 
             config.update(printConfig)
 
@@ -479,7 +488,8 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
                 text = '\n'.join(text)
 
                 # Create qr text with image size and text
-                text_img = get_qr_text(qr_img.size, text, config.get('font'), font_size)
+                text_img = get_qr_text(
+                    qr_img.size, text, config.get('font'), font_size)
 
                 # Combine qr image and qr text
                 qr_with_text = get_concat(qr_img, text_img)
@@ -493,7 +503,7 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
                 # Save image without text to container
                 file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(
                     getattr(obj, text_fields[0], 'default'))
-                resize_width_height = (100, 100)
+                resize_width_height = (90, 90)
                 qr_img = qr_img.resize(resize_width_height)
                 qr_img.save(file_path)
 

@@ -4,25 +4,39 @@
 
 <!--Multi Page Print Image Script-->
 <script type="text/javascript">
-  function printImg(source) {
+  function printImg(source, without_text) {
     var win = window.open("")
-    const printCSS = 
-    `
-    <style>
-      @page {
-        margin-right: 20px;
-        margin-left: 10px;
-      }
-    </style>
-    `
+    let printCSS;
+    // Page formatting for 1" Avery Sheet
+    if (without_text){
+      printCSS = 
+      `
+      <style>
+        @page {
+          margin: 12.875mm 15.875mm 0mm 13.875mm
+        }
+      </style>
+      `
+    }
+    else{
+      printCSS = 
+      `
+      <style>
+        @page {
+          margin: 8.7mm 4.7625mm 12.7mm 4.7625mm
+        }
+      </style>
+      `
+    }
     win.document.write(printCSS)
 
     // Add html template as new page to new window
     for(let i = 0; i < source.length - 1; i++){
-      win.document.write('<div style="text-align: center"><img src="' + 'data:image/png;base64,' + source[i] + '"/></div><div style = "height:0; page-break-after: always"></div>')
+      win.document.write('<div style="text-align: left"><img src="' + 'data:image/png;base64,' + source[i] + '"/></div><div style = "height:0; page-break-after: always"></div>')
     }
+    
     // Add last image, print and close the new window
-    win.document.write('<div style="text-align: center"><img style="text-align: center" src="' + 'data:image/png;base64,' + source[source.length-1] + '" onload="window.print();window.close()" /></div>')
+    win.document.write('<div style="text-align: left"><img src="' + 'data:image/png;base64,' + source[source.length-1] + '" onload="window.print();window.close()" /></div>')
 
     win.focus()
   }
@@ -50,14 +64,13 @@
   <div class="col-md-6 col-md-offset-3">
     <!--Print Button-->
     <div class="text-center">
-      <button onclick="printImg({{image}})"; class="btn btn-xl btn-primary">
+      <button onclick="printImg({{image}},{{without_text}})"; class="btn btn-xl btn-primary">
         <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
         Print
       </button> 
     </div>
   </div>
 </div>
-
 <!--Preview Images-->
 {% for img in image%}
 <div class="row" style="padding-top: 100px">
