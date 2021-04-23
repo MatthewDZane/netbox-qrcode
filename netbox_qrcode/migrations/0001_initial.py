@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(blank=True, max_length=100, null=True)),
                 ('status', models.CharField(default='active', max_length=50)),
                 ('rack', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='dcim.rack')),
-                ('role', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='dcim.rackrole')),
+                ('role', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='dcim.rackrole')),
                 ('site', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='dcim.site')),
             ],
             options={

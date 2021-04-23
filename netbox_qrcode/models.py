@@ -17,8 +17,11 @@ class QRObject(models.Model):
         abstract = True
 
 # Devices Wrapper
+
+
 class QRExtendedDevice(QRObject):
-    device = models.ForeignKey(to="dcim.Device", on_delete=models.CASCADE, null=True)
+    device = models.ForeignKey(
+        to="dcim.Device", on_delete=models.CASCADE, null=True)
 
     name = models.CharField(
         max_length=64,
@@ -59,14 +62,19 @@ class QRExtendedDevice(QRObject):
         null=True
     )
     # Set link for id column in QRDeviceTable to be the return url formatted with device's pk
+
     def get_absolute_url(self):
         return reverse('dcim:device', args=[self.device.pk])
+
     def get_status_class(self):
         return DeviceStatusChoices.CSS_CLASSES.get(self.status)
 
 # Racks Wrapper
+
+
 class QRExtendedRack(QRObject):
-    rack = models.ForeignKey(to="dcim.Rack", on_delete=models.CASCADE, null=True)
+    rack = models.ForeignKey(
+        to="dcim.Rack", on_delete=models.CASCADE, null=True)
 
     name = models.CharField(
         max_length=100,
@@ -87,7 +95,7 @@ class QRExtendedRack(QRObject):
     )
     role = models.ForeignKey(
         to='dcim.RackRole',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='+',
         blank=True,
         null=True,
@@ -103,13 +111,17 @@ class QRExtendedRack(QRObject):
 
     def get_absolute_url(self):
         return reverse('dcim:rack', args=[self.rack.pk])
+
     def get_status_class(self):
         return RackStatusChoices.CSS_CLASSES.get(self.status)
 
 # Cables Wrapper
+
+
 class QRExtendedCable(QRObject):
-    cable = models.ForeignKey(to="dcim.Cable", on_delete=models.CASCADE, null=True)
-    
+    cable = models.ForeignKey(
+        to="dcim.Cable", on_delete=models.CASCADE, null=True)
+
     # label = models.CharField(
     #     max_length=100,
     #     blank=True
@@ -142,6 +154,6 @@ class QRExtendedCable(QRObject):
 
     def get_absolute_url(self):
         return reverse('dcim:cable', args=[self.cable.pk])
+
     def get_status_class(self):
         return CableStatusChoices.CSS_CLASSES.get(self.status)
-

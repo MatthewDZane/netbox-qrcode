@@ -5,7 +5,7 @@ from dcim.models import Device, Site, Region, Rack, DeviceRole, DeviceType, Manu
 from dcim.choices import DeviceStatusChoices, RackStatusChoices, RackTypeChoices, RackWidthChoices, CableStatusChoices, CableTypeChoices
 
 from utilities.choices import ColorChoices
-from utilities.filters import TreeNodeMultipleChoiceFilter, MultiValueNumberFilter, MultiValueCharFilter
+from utilities.filters import TreeNodeMultipleChoiceFilter
 
 from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
 

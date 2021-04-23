@@ -70,7 +70,9 @@ class SearchFilterFormRack(BaseFilterForm):
     # )
     role = DynamicModelChoiceField(
         queryset=RackRole.objects.all(),
-        required=False
+        to_field_name='slug',
+        required=False,
+        null_option='None',
     )
 
 
