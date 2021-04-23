@@ -346,7 +346,7 @@ class PrintView(View):
             rowSize = 3
             numRows = 10
             horizontal_print_padding = 110
-            vertical_print_padding = 4
+            vertical_print_padding = 5
             context['without_text'] = 0
 
         # Multiple selected, account for multi page print
