@@ -1,9 +1,6 @@
 import django_tables2 as tables
 from utilities.tables import BaseTable, ChoiceFieldColumn, ColoredLabelColumn, ToggleColumn
-from dcim.models import Device, Rack, Site, Cable
 from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
-
-from django.utils.safestring import mark_safe
 
 # Device Table
 class QRDeviceTables(BaseTable):

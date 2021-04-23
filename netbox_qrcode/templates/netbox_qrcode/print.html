@@ -13,7 +13,7 @@
       `
       <style>
         @page {
-          margin: 12.875mm 15.875mm 0mm 13.875mm
+          margin: 13.875mm 15.875mm 0mm 15mm
         }
       </style>
       `
@@ -23,7 +23,7 @@
       `
       <style>
         @page {
-          margin: 8.7mm 4.7625mm 12.7mm 4.7625mm
+          margin: 10mm 4.7625mm 0mm 15.7625mm
         }
       </style>
       `
@@ -32,11 +32,11 @@
 
     // Add html template as new page to new window
     for(let i = 0; i < source.length - 1; i++){
-      win.document.write('<div style="text-align: left"><img src="' + 'data:image/png;base64,' + source[i] + '"/></div><div style = "height:0; page-break-after: always"></div>')
+      win.document.write('<div style="text-align: left; height:0;"><img src="' + 'data:image/png;base64,' + source[i] + '"/></div><div style="height:0; page-break-after: always"></div>')
     }
-    
+
     // Add last image, print and close the new window
-    win.document.write('<div style="text-align: left"><img src="' + 'data:image/png;base64,' + source[source.length-1] + '" onload="window.print();window.close()" /></div>')
+    win.document.write('<div style="text-align: left; height:0;"><img src="' + 'data:image/png;base64,' + source[source.length-1] + '" onload="window.print();window.close()" /></div>')
 
     win.focus()
   }

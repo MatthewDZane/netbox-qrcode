@@ -345,7 +345,7 @@ class PrintView(View):
                 '/') + 'media/image-attachments/'
             rowSize = 3
             numRows = 10
-            horizontal_print_padding = 100
+            horizontal_print_padding = 110
             vertical_print_padding = 5
             context['without_text'] = 0
 
@@ -364,14 +364,17 @@ class PrintView(View):
                 # Append info to bottom of image using user config font if no text QR
                 if without_text:
                     text_img = get_qr_text((image.width, footer_text_height), obj.name, settings.PLUGINS_CONFIG.get(
-                        'netbox_qrcode', {}).get('font'))
+                        'netbox_qrcode', {}).get('font'), 200)
                     text_img = add_print_padding_v(text_img, text_padding)
                     image = get_concat_v(image, text_img)
 
-                # Resize text Qr
+                # Resize text Qr and add vertical padding
                 else:
+                    resize_width_height = (162, 88)
+                    image = image.resize(resize_width_height)
                     image = add_print_padding_v(image, vertical_print_padding)
 
+                # Append modified image
                 image_curr.append(image)
 
                 # If row full, push to row list and reset current
@@ -393,10 +396,8 @@ class PrintView(View):
                 # Combine images in single row into one image
                 first_image = row[0]
                 for i in range(1, len(row)):
-                    # If no text, add padding to middle images only
-                    row[i] = add_print_padding(
-                        row[i], horizontal_print_padding)
-
+                    # Add left side padding to all but first image in row and append
+                    row[i] = add_print_padding_left(row[i], horizontal_print_padding)
                     first_image = get_concat(first_image, row[i])
 
                 image_rows_combined.append(first_image)

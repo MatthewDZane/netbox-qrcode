@@ -63,7 +63,7 @@ def get_concat_v(im1, im2):
     dst.paste(im2, (0, im1.height))
     return dst
 
-def add_print_padding(img, padding):
+def add_print_padding_left(img, padding):
     blank = Image.new('L', (padding, img.height), 'white')
     img = get_concat(blank, img)
     return img
