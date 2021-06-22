@@ -1,10 +1,9 @@
 import django_filters
 from django.db import models
 
-from dcim.models import Device, Site, Region, Rack, DeviceRole, DeviceType, Manufacturer, RackRole
-from dcim.choices import DeviceStatusChoices, RackStatusChoices, RackTypeChoices, RackWidthChoices, CableStatusChoices, CableTypeChoices
+from dcim.models import Site, Region, Rack, Manufacturer, RackRole
+from dcim.choices import DeviceStatusChoices, RackStatusChoices
 
-from utilities.choices import ColorChoices
 from utilities.filters import TreeNodeMultipleChoiceFilter
 
 from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
@@ -71,9 +70,6 @@ class SearchRackFilterSet(BaseFiltersSet):
         choices=RackStatusChoices,
         null_value=None
     )
-    # type = django_filters.MultipleChoiceFilter(
-    #     choices=RackTypeChoices
-    # )
     role = django_filters.ModelMultipleChoiceFilter(
         field_name='role__slug',
         queryset=RackRole.objects.all(),
@@ -97,13 +93,7 @@ class SearchCableFilterSet(django_filters.FilterSet):
         method='search',
         label='Search',
     )
-    # status = django_filters.MultipleChoiceFilter(
-    #     choices=CableStatusChoices
-    # )
-    # type = django_filters.MultipleChoiceFilter(
-    #     choices=CableTypeChoices
-    # )
-
+    
     class Meta:
         model = QRExtendedCable
         fields = ['id', ]

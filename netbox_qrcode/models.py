@@ -2,8 +2,7 @@
 from django.db import models
 from django.urls import reverse
 
-from dcim.models import Device, Site, Region, Rack, Cable, DeviceRole, DeviceType, RackRole, Manufacturer
-from dcim.choices import DeviceStatusChoices, RackStatusChoices, CableStatusChoices, RackTypeChoices, CableTypeChoices
+from dcim.choices import DeviceStatusChoices, RackStatusChoices, CableStatusChoices
 from ipam.choices import *
 
 
@@ -17,8 +16,6 @@ class QRObject(models.Model):
         abstract = True
 
 # Devices Wrapper
-
-
 class QRExtendedDevice(QRObject):
     device = models.ForeignKey(
         to="dcim.Device", on_delete=models.CASCADE, null=True)
@@ -62,7 +59,6 @@ class QRExtendedDevice(QRObject):
         null=True
     )
     # Set link for id column in QRDeviceTable to be the return url formatted with device's pk
-
     def get_absolute_url(self):
         return reverse('dcim:device', args=[self.device.pk])
 
@@ -70,8 +66,6 @@ class QRExtendedDevice(QRObject):
         return DeviceStatusChoices.CSS_CLASSES.get(self.status)
 
 # Racks Wrapper
-
-
 class QRExtendedRack(QRObject):
     rack = models.ForeignKey(
         to="dcim.Rack", on_delete=models.CASCADE, null=True)
@@ -101,13 +95,6 @@ class QRExtendedRack(QRObject):
         null=True,
         help_text='Functional role'
     )
-    # type = models.CharField(
-    #     choices=RackTypeChoices,
-    #     max_length=50,
-    #     blank=True,
-    #     null=True,
-    #     verbose_name='Type'
-    # )
 
     def get_absolute_url(self):
         return reverse('dcim:rack', args=[self.rack.pk])
@@ -116,41 +103,9 @@ class QRExtendedRack(QRObject):
         return RackStatusChoices.CSS_CLASSES.get(self.status)
 
 # Cables Wrapper
-
-
 class QRExtendedCable(QRObject):
     cable = models.ForeignKey(
         to="dcim.Cable", on_delete=models.CASCADE, null=True)
-
-    # label = models.CharField(
-    #     max_length=100,
-    #     blank=True
-    # )
-    # status = models.CharField(
-    #     max_length=50,
-    #     choices=CableStatusChoices,
-    #     default=CableStatusChoices.STATUS_CONNECTED
-    # )
-    # type = models.CharField(
-    #     max_length=50,
-    #     choices=CableTypeChoices,
-    #     blank=True,
-    #     null=True
-    # )
-    # _termination_a_device = models.ForeignKey(
-    #     to=Device,
-    #     on_delete=models.CASCADE,
-    #     related_name='+',
-    #     blank=True,
-    #     null=True
-    # )
-    # _termination_b_device = models.ForeignKey(
-    #     to=Device,
-    #     on_delete=models.CASCADE,
-    #     related_name='+',
-    #     blank=True,
-    #     null=True
-    # )
 
     def get_absolute_url(self):
         return reverse('dcim:cable', args=[self.cable.pk])

@@ -2,7 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from extras.plugins import PluginTemplateExtension
 
 from .utilities import get_img_b64, get_qr, get_qr_text, get_concat
-import base64
 
 class QRCode(PluginTemplateExtension):
 
@@ -54,7 +53,7 @@ class QRCode(PluginTemplateExtension):
             text_img = get_qr_text(qr_img.size, text, config.get('font'))
 
             # Combine qr image and qr text 
-            qr_with_text = get_concat(qr_img, text_img)
+            qr_with_text = get_concat(qr_img, text_img, config.get('text_location', 'right'))
 
             # Convert png to base 64 image
             img = get_img_b64(qr_with_text)

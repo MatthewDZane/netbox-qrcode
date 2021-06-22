@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django_tables2 import RequestConfig
 
-from dcim.models import Device, Rack, Site, Cable
+from dcim.models import Device, Rack, Cable
 from dcim.tables import DeviceTable, RackTable, CableTable
 
 from . import forms, filters
@@ -203,11 +203,6 @@ class QRcodeCableView(View):
                 id=cable.id,
                 cable=cable,
                 name=cable.name,
-                # label=cable.label,
-                # status=cable.status,
-                # type=cable.type,
-                # _termination_a_device=cable._termination_a_device,
-                # _termination_b_device=cable._termination_b_device,
                 photo='image-attachments/{}.png'.format(cable.name),
                 url=url_resized
             )
@@ -299,13 +294,15 @@ class PrintView(View):
         # Set images with or without text should be used and build url
         without_text = request.POST.get('without_text')
 
-        """
-        Concatenates rows into pages
-        :param imageRow: List of rows of images
-        :param numRows: Number of rows in a page
-        :return: List of pages of images
-        """
+
         def combine_rows(imageRow, numRows):
+            """
+            Concatenates rows into pages
+            :param imageRow: List of rows of images
+            :param numRows: Number of rows in a page
+            :return: List of pages of images
+            """
+
             image_pages = []
 
             final_image = imageRow[0]
@@ -412,16 +409,14 @@ class PrintView(View):
             return redirect('/'.join(self.request.path_info.split('/')[:-2]))
 
 
-"""
-Creates QRcode image with text, without text, and thumbsized for netbox objects and saves to disk 
-:param request: network request
-:param Model: netbox object
-:param objName:  netbox object string name
-:return: number of object images created
-"""
-
-
 def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_size=0):
+    """
+    Creates QRcode image with text, without text, and thumbsized for netbox objects and saves to disk 
+    :param request: network request
+    :param Model: netbox object
+    :param objName:  netbox object string name
+    :return: number of object images created
+    """
 
     # Collect User Config and make copy
     config = settings.PLUGINS_CONFIG.get('netbox_qrcode', {}).copy()

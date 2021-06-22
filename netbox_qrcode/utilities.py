@@ -5,7 +5,6 @@ from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
 
 from pkg_resources import resource_stream
-import os
 
 
 def get_qr_with_text(qr, descr):
@@ -51,11 +50,58 @@ def get_qr_text(size, text, font='ArialMT', font_size=100):
     return img
 
 
-def get_concat(im1, im2):
-    dst = Image.new('L', (im1.width + im2.width, im1.height), 'white')
-    dst.paste(im1, (0, 0))
-    dst.paste(im2, (im1.width, 0))
+def get_concat(im1, im2, direction='right'):
+    if direction == 'right' or direction == 'left':
+        width = im1.width + im2.width
+        height = max(im1.height, im2.height)
+    elif direction == 'down' or direction == 'up':
+        width = max(im1.width, im2.width)
+        height = im1.height + im2.height
+    else:
+        raise ValueError(
+            'Invalid direction "{}" (must be one of "left", "right", "up", or "down")'.format(direction)
+        )
+
+    dst = Image.new('L', (width, height), 'white')
+
+    if direction == 'right' or direction == 'left':
+        if im1.height > im2.height:
+            im1_y = 0
+            im2_y = abs(im1.height-im2.height) // 2
+        else:
+            im1_y = abs(im1.height-im2.height) // 2
+            im2_y = 0
+
+        if direction == 'right':
+            im1_x = 0
+            im2_x = im1.width
+        else:
+            im1_x = im2.width
+            im2_x = 0
+    elif direction == 'up' or direction == 'down':
+        if im1.width > im2.width:
+            im1_x = 0
+            im2_x = abs(im1.width-im2.width) // 2
+        else:
+            im1_x = abs(im1.width-im2.width) // 2
+            im2_x = 0
+
+        if direction == 'down':
+            im1_y = 0
+            im2_y = im1.height
+        else:
+            im1_y = im2.height
+            im2_y = 0
+    else:
+        raise ValueError(
+            'Invalid direction "{}" (must be one of "left", "right", "up", or "down")'.format(direction)
+        )
+
+    dst.paste(im1, (im1_x, im1_y))
+    dst.paste(im2, (im2_x, im2_y))
+
     return dst
+
 
 def get_concat_v(im1, im2):
     dst = Image.new('L', (im1.width, im1.height + im2.height), 'white')
@@ -63,10 +109,12 @@ def get_concat_v(im1, im2):
     dst.paste(im2, (0, im1.height))
     return dst
 
+
 def add_print_padding_left(img, padding):
     blank = Image.new('L', (padding, img.height), 'white')
     img = get_concat(blank, img)
     return img
+
 
 def add_print_padding_v(img, padding):
     blank = Image.new('L', (img.width, padding), 'white')

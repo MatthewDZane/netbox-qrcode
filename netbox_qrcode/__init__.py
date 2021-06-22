@@ -1,7 +1,6 @@
 from extras.plugins import PluginConfig
 from .version import __version__
 
-
 class QRCodeConfig(PluginConfig):
     name = 'netbox_qrcode'
     verbose_name = 'QR Code View'
@@ -15,6 +14,7 @@ class QRCodeConfig(PluginConfig):
         'text_fields': ['name', 'serial'],
         'font': 'TahomaBold',
         'custom_text': None,
+        'text_location': 'right',
         'qr_version': 1,
         'qr_error_correction': 0,
         'qr_box_size': 6,
