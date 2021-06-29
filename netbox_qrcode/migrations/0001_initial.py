@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('dcim', '0130_sitegroup'),
+        ('dcim', '0131_consoleport_speed'),
     ]
 
     operations = [
