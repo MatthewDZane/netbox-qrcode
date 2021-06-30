@@ -350,13 +350,16 @@ class PrintView(View):
             image_curr = []
             image_rows = []
             image_rows_combined = []
-
             for i in range(image_count):
 
                 obj = Model.objects.get(pk=pk_list[i])
                 url = '{}{}.png'.format(base_url, obj._meta.object_name + str(obj.pk))
-                image = Image.open(requests.get(url, stream=True).raw)
+                try:
+                    image = Image.open(requests.get(url, stream=True).raw)
 
+                except UnidentifiedImageError:
+                    image = Image.new('L', (100,100), 'white')
+                    
                 # Append info to bottom of image using user config font if no text QR
                 obj_name = obj.name if hasattr(obj, 'name') else obj._meta.object_name + str(obj.pk)
                 if without_text:
