@@ -355,7 +355,7 @@ class PrintView(View):
 
                 obj = Model.objects.get(pk=pk_list[i])
                 url = '{}{}.png'.format(base_url, obj._meta.object_name + str(obj.pk))
-                image = Image.open(requests.get(url, stream=True).raw)
+                image = Image.open(url)
 
                 # Append info to bottom of image using user config font if no text QR
                 obj_name = obj.name if hasattr(obj, 'name') else obj._meta.object_name + str(obj.pk)
