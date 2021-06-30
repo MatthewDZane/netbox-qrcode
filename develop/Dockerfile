@@ -1,7 +1,7 @@
 ARG python_ver=3.7
 FROM python:${python_ver}
 
-ARG netbox_ver=master
+ARG netbox_ver=develop
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /opt
