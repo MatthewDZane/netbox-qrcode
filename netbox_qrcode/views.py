@@ -356,8 +356,8 @@ class PrintView(View):
                 url = '{}{}.png'.format(base_url, obj._meta.object_name + str(obj.pk))
                 try:
                     image = Image.open(requests.get(url, stream=True).raw)
-
-                except UnidentifiedImageError:
+                # UnidentifiedImageError, NameError
+                except:
                     image = Image.new('L', (100,100), 'white')
                     
                 # Append info to bottom of image using user config font if no text QR
