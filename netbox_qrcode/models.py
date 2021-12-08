@@ -2,7 +2,7 @@
 from django.db import models
 from django.urls import reverse
 
-from dcim.choices import DeviceStatusChoices, RackStatusChoices, CableStatusChoices
+from dcim.choices import DeviceStatusChoices, RackStatusChoices, LinkStatusChoices
 from ipam.choices import *
 
 
@@ -129,4 +129,4 @@ class QRExtendedCable(QRObject):
         return reverse('dcim:cable', args=[self.cable.pk])
 
     def get_status_class(self):
-        return CableStatusChoices.CSS_CLASSES.get(self.status)
+        return LinkStatusChoices.CSS_CLASSES.get(self.status)
