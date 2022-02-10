@@ -2,7 +2,7 @@ from django import forms
 from dcim.models import Device, Site, Region, Rack, RackRole, Manufacturer
 from dcim.choices import DeviceStatusChoices, RackStatusChoices
 
-from utilities.forms import DynamicModelMultipleChoiceField, StaticSelect2Multiple, DynamicModelChoiceField
+from utilities.forms import DynamicModelMultipleChoiceField, StaticSelectMultiple, DynamicModelChoiceField
 
 
 class BaseFilterForm(forms.Form):
@@ -33,7 +33,7 @@ class SearchFilterFormDevice(BaseFilterForm):
     status = forms.MultipleChoiceField(
         choices=DeviceStatusChoices,
         required=False,
-        widget=StaticSelect2Multiple()
+        widget=StaticSelectMultiple()
     )
     device_id = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
@@ -61,7 +61,7 @@ class SearchFilterFormRack(BaseFilterForm):
     status = forms.MultipleChoiceField(
         choices=RackStatusChoices,
         required=False,
-        widget=StaticSelect2Multiple()
+        widget=StaticSelectMultiple()
     )
     role = DynamicModelChoiceField(
         queryset=RackRole.objects.all(),
