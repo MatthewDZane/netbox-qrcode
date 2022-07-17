@@ -12,14 +12,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #                       #
 #########################
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-    }
-]
-
 # This is a list of valid fully-qualified domain names (FQDNs) for the NetBox server. NetBox will not permit write
 # access to the server via any other hostnames. The first FQDN in the list will be treated as the preferred name.
 #
