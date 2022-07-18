@@ -119,20 +119,18 @@ class QRcodeRackView(View):
         for rack in Rack.objects.all().iterator():
 
             # Create rack with resized url
-            url_resized = '{}resized{}.png'.format(base_url, rack._meta.object_name + str(rack.pk))
-            obj = QRExtendedRack(
+            url_resized = '{}resized{}.png'.format(base_url, rack._meta.object_name)
+            QRExtendedRack.objects.get_or_create(
                 id=rack.id,
                 rack=rack,
                 name=rack.name,
                 status=rack.status,
                 site=rack.site,
                 role=rack.role,
-                photo='image-attachments/{}.png'.format(rack._meta.object_name + str(rack.pk)),
+                photo='image-attachments/{}.png'.format(rack._meta.object_name),
                 url=url_resized
             )
-            obj.save()
-            print(obj)
-            #print(created)
+
 
         # Create QuerySets from extended models
         queryset_rack = QRExtendedRack.objects.all()
