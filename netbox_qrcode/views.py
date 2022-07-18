@@ -130,6 +130,7 @@ class QRcodeRackView(View):
                 photo='image-attachments/{}.png'.format(rack._meta.object_name + str(rack.pk)),
                 url=url_resized
             )
+            obj.save()
             print(obj)
             #print(created)
 
