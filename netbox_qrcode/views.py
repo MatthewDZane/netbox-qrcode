@@ -429,89 +429,89 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     for obj in Model.objects.all().iterator():
 
         # Check if qrcode already exists
-        #image_url = request.build_absolute_uri(
-        #    '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
-        #rq = requests.get(image_url)
+        image_url = request.build_absolute_uri(
+            '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
+        rq = requests.get(image_url)
 
         # Create QR Code only for non-existing or if forced
-        #if rq.status_code != 200 or request.POST.get('force-reload-all'):
-        numReloaded += 1
+        if rq.status_code != 200 or request.POST.get('force-reload-all'):
+            numReloaded += 1
 
-        url = request.build_absolute_uri(
-            '/') + 'dcim/{}/{}'.format(objName, obj.pk)
+            url = request.build_absolute_uri(
+                '/') + 'dcim/{}/{}'.format(objName, obj.pk)
 
-        # Get object config settings
-        obj_cfg = config.get(objName[:-1])
-        if obj_cfg is None:
-            return ''
-        # and override default config
-        config.update(obj_cfg)
+            # Get object config settings
+            obj_cfg = config.get(objName[:-1])
+            if obj_cfg is None:
+                return ''
+            # and override default config
+            config.update(obj_cfg)
 
-        # Override User Config with print settings
-        printConfig = {}
-        printConfig['qr_box_size'] = box_size
-        printConfig['qr_border'] = border_size
+            # Override User Config with print settings
+            printConfig = {}
+            printConfig['qr_box_size'] = box_size
+            printConfig['qr_border'] = border_size
 
-        config.update(printConfig)
+            config.update(printConfig)
 
-        qr_args = {}
-        for k, v in config.items():
-            if k.startswith('qr_'):
-                qr_args[k.replace('qr_', '')] = v
+            qr_args = {}
+            for k, v in config.items():
+                if k.startswith('qr_'):
+                    qr_args[k.replace('qr_', '')] = v
 
-        # Create qr image
-        qr_img = get_qr(url, **qr_args)
+            # Create qr image
+            qr_img = get_qr(url, **qr_args)
 
-        # Handle qr text if enabled
-        if config.get('with_text'):
-            text = []
-            for text_field in config.get('text_fields', []):
-                cfn = None
-                if '.' in text_field:
-                    try:
-                        text_field, cfn = text_field.split('.')
-                    except ValueError:
-                        cfn = None
-                if getattr(obj, text_field, None):
-                    if cfn:
+            # Handle qr text if enabled
+            if config.get('with_text'):
+                text = []
+                for text_field in config.get('text_fields', []):
+                    cfn = None
+                    if '.' in text_field:
                         try:
-                            if getattr(obj, text_field).get(cfn):
-                                text.append('{}'.format(
-                                    getattr(obj, text_field).get(cfn)))
-                        except AttributeError:
-                            pass
-                    else:
-                        text.append('{}'.format(getattr(obj, text_field)))
-            custom_text = config.get('custom_text')
-            if custom_text:
-                text.append(custom_text)
-            text = '\n'.join(text)
+                            text_field, cfn = text_field.split('.')
+                        except ValueError:
+                            cfn = None
+                    if getattr(obj, text_field, None):
+                        if cfn:
+                            try:
+                                if getattr(obj, text_field).get(cfn):
+                                    text.append('{}'.format(
+                                        getattr(obj, text_field).get(cfn)))
+                            except AttributeError:
+                                pass
+                        else:
+                            text.append('{}'.format(getattr(obj, text_field)))
+                custom_text = config.get('custom_text')
+                if custom_text:
+                    text.append(custom_text)
+                text = '\n'.join(text)
 
-            # Create qr text with image size and text
-            text_img = get_qr_text(
-                qr_img.size, text, config.get('font'), font_size)
+                # Create qr text with image size and text
+                text_img = get_qr_text(
+                    qr_img.size, text, config.get('font'), font_size)
 
-            # Combine qr image and qr text
-            qr_with_text = get_concat(qr_img, text_img)
+                # Combine qr image and qr text
+                qr_with_text = get_concat(qr_img, text_img)
 
-            # Save image with text to container with object's first field name
-            text_fields = config.get('text_fields', [])
-            file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(
-                obj._meta.object_name + str(obj.pk))
-            qr_with_text.save(file_path)
+                # Save image with text to container with object's first field name
+                text_fields = config.get('text_fields', [])
+                file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(
+                    obj._meta.object_name + str(obj.pk))
+                qr_with_text.save(file_path)
 
-            # Save image without text to container
-            file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(
-                obj._meta.object_name + str(obj.pk))
-            resize_width_height = (90, 90)
-            qr_img = qr_img.resize(resize_width_height)
-            qr_img.save(file_path)
+                # Save image without text to container
+                file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(
+                    obj._meta.object_name + str(obj.pk))
+                resize_width_height = (90, 90)
+                qr_img = qr_img.resize(resize_width_height)
+                qr_img.save(file_path)
 
-            # Resize final image for thumbnails and save
-            resize_width_height = (120, 50)
-            qr_with_text = qr_with_text.resize(resize_width_height)
-            file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(
-                obj._meta.object_name + str(obj.pk))
-            qr_with_text.save(file_path)
+                # Resize final image for thumbnails and save
+                resize_width_height = (120, 50)
+                qr_with_text = qr_with_text.resize(resize_width_height)
+                file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(
+                    obj._meta.object_name + str(obj.pk))
+                qr_with_text.save(file_path)
 
     return numReloaded
