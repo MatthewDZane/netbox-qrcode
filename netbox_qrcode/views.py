@@ -127,7 +127,7 @@ class QRcodeRackView(View):
                 status=rack.status,
                 site=rack.site,
                 role=rack.role,
-                photo='image-attachments/{}.png'.format(rack._meta.object_name),
+                photo='image-attachments/{}.png'.format(rack._meta.object_name + str(device.pk)),
                 url=url_resized
             )
 
