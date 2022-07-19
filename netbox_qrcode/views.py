@@ -23,28 +23,27 @@ class QRcodeDeviceView(View):
     filterset_device = filters.SearchDeviceFilterSet
 
     def get(self, request):
-        # Clear all objects in case of duplicate key violation
-        #QRExtendedDevice.objects.all().delete()
-
         base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
 
         # Find all current Devices and instantiates new models that provide links to photos
-        #for device in Device.objects.all().iterator():
+        for device in Device.objects.all().iterator():
 
             # Create device with resized url
-        #    url_resized = '{}resized{}.png'.format(base_url, device._meta.object_name + str(device.pk))
-        #    QRExtendedDevice.objects.get_or_create(
-        #        id=device.id,
-        #        device=device,
-        #        name=device.name,
-        #        status=device.status,
-        #        device_type=device.device_type,
-        #        device_role=device.device_role,
-        #        site=device.site,
-        #        rack=device.rack,
-        #        photo='image-attachments/{}.png'.format(device._meta.object_name + str(device.pk)),
-        #        url=url_resized
-        #    )
+            url_resized = '{}resized{}.png'.format(base_url, device._meta.object_name + str(device.pk))
+            QRExtendedDevice.objects.update_or_create(
+                id=device.id,
+                defaults={
+                    device=device,
+                    name=device.name,
+                    status=device.status,
+                    device_type=device.device_type,
+                    device_role=device.device_role,
+                    site=device.site,
+                    rack=device.rack,
+                    photo='image-attachments/{}.png'.format(device._meta.object_name + str(device.pk)),
+                    url=url_resized
+                },
+            )
 
         # Create QuerySets from extended models
         queryset_device = QRExtendedDevice.objects.all()
@@ -55,10 +54,6 @@ class QRcodeDeviceView(View):
 
         # Create Tables for each separate object's querysets
         table_device = QRDeviceTables(queryset_device)
-
-        # Paginate Tables
-        RequestConfig(request, paginate={
-                      "per_page": 50}).configure(table_device)
 
         # Render html with context
         return render(request, self.template_name, {
@@ -91,8 +86,8 @@ class QRcodeDeviceView(View):
         table_device = QRDeviceTables(queryset_device)
 
         # Paginate Tables
-        RequestConfig(request, paginate={
-                      "per_page": 50}).configure(table_device)
+        #RequestConfig(request, paginate={
+        #              "per_page": 50}).configure(table_device)
 
         # Render html with context
         return render(request, self.template_name, {
