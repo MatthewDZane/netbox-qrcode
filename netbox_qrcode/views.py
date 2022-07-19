@@ -33,15 +33,15 @@ class QRcodeDeviceView(View):
             QRExtendedDevice.objects.update_or_create(
                 id=device.id,
                 defaults={
-                    device: device,
-                    name: device.name,
-                    status: device.status,
-                    device_type: device.device_type,
-                    device_role: device.device_role,
-                    site: device.site,
-                    rack: device.rack,
-                    photo: 'image-attachments/{}.png'.format(device._meta.object_name + str(device.pk)),
-                    url: url_resized
+                    "device": device,
+                    "name": device.name,
+                    "status": device.status,
+                    "device_type": device.device_type,
+                    "device_role": device.device_role,
+                    "site": device.site,
+                    "rack": device.rack,
+                    "photo": 'image-attachments/{}.png'.format(device._meta.object_name + str(device.pk)),
+                    "url": url_resized
                 },
             )
 
