@@ -131,7 +131,6 @@ class QRcodeRackView(View):
                 url=url_resized
             )
 
-
         # Create QuerySets from extended models
         queryset_rack = QRExtendedRack.objects.all()
 
@@ -203,7 +202,7 @@ class QRcodeCableView(View):
             QRExtendedCable.objects.get_or_create(
                 id=cable.id,
                 cable=cable,
-                name=cable._meta.object_name + str(cable.id),
+                name=cable._meta.object_name + str(cable.pk),
                 photo='image-attachments/{}.png'.format(cable._meta.object_name + str(cable.pk)),
                 url=url_resized
             )
