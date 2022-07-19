@@ -23,28 +23,6 @@ class QRcodeDeviceView(View):
     filterset_device = filters.SearchDeviceFilterSet
 
     def get(self, request):
-        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
-
-        # Find all current Devices and instantiates new models that provide links to photos
-        for device in Device.objects.all().iterator():
-
-            # Create device with resized url
-            url_resized = '{}resized{}.png'.format(base_url, device._meta.object_name + str(device.pk))
-            QRExtendedDevice.objects.update_or_create(
-                id=device.id,
-                defaults={
-                    "device": device,
-                    "name": device.name,
-                    "status": device.status,
-                    "device_type": device.device_type,
-                    "device_role": device.device_role,
-                    "site": device.site,
-                    "rack": device.rack,
-                    "photo": 'image-attachments/{}.png'.format(device._meta.object_name + str(device.pk)),
-                    "url": url_resized
-                },
-            )
-
         # Create QuerySets from extended models
         queryset_device = QRExtendedDevice.objects.all()
 
