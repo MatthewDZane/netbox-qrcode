@@ -28,7 +28,8 @@ def get_img_b64(img):
     return str(base64.b64encode(stream.getvalue()), encoding='ascii')
 
 
-def get_qr_text(max_size, text, font='TahomaBold', font_size=56):
+def get_qr_text(max_size, text, font='TahomaBold'):
+    font_size = 56
     tmpimg = Image.new('L', max_size, 'white')
     text_too_large = True
     while text_too_large:
