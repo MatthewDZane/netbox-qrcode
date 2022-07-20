@@ -403,7 +403,7 @@ class ReloadQRThread(threading.Thread):
         thread_lock.release()
 
     def reload_qr_images(self):
-        if force_reload_all:
+        if self.force_reload_all:
             for obj in self.objects:
                 numReloaded += 1
                 reload_qr_image(obj)
