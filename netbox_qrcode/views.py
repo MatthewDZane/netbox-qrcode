@@ -389,8 +389,8 @@ class PrintView(View):
 
 class ReloadQRThread(threading.Thread):
     def __init__(self, request, objects, object_name, font_size, box_size, border_size, force_reload_all):
-        self.request = request
         threading.Thread.__init__(self)
+        self.request = request
         self.objects = objects
         self.object_name = object_name
         self.font_size = font_size
@@ -413,7 +413,7 @@ class ReloadQRThread(threading.Thread):
                 # Check if qrcode already exists
                 image_url = self.request.build_absolute_uri(
                     '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
-                rq = self.requests.get(image_url)
+                rq = self.request.get(image_url)
 
                 # Create QR Code only for non-existing or if forced
                 if rq.status_code != 200:
