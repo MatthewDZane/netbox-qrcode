@@ -398,9 +398,9 @@ class ReloadQRThread(threading.Thread):
         self.force_reload_all = force_reload_all
 
     def run(self):
-        threadLock.acquire()
+        thread_lock.acquire()
         self.reload_qr_images()
-        threadLock.release()
+        thread_lock.release()
 
     def reload_qr_images(self):
         if force_reload_all:
@@ -509,8 +509,10 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     # Collect User Config and make copy
     config = settings.PLUGINS_CONFIG.get('netbox_qrcode', {}).copy()
 
+    thread_lock = threading.Lock()
     threads = []
     numReloaded = 0
+    
     objects = Model.objects.all().iterator()
     force_reload_all = request.POST.get('force-reload-all')
     threads.append(ReloadQRThread(split_objects(objects, 5), objName, font_size, box_size, border_size, force_reload_all))
