@@ -497,6 +497,7 @@ class ReloadQRThread(threading.Thread):
                 obj._meta.object_name + str(obj.pk))
             qr_with_text.save(file_path)
 
+
 def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_size=0):
     """
     Creates QRcode image with text, without text, and thumbsized for netbox objects and saves to disk 
@@ -509,10 +510,11 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     # Collect User Config and make copy
     config = settings.PLUGINS_CONFIG.get('netbox_qrcode', {}).copy()
 
+    global thread_lock
     thread_lock = threading.Lock()
     threads = []
     numReloaded = 0
-    
+
     objects = Model.objects.all().iterator()
     force_reload_all = request.POST.get('force-reload-all')
     threads.append(ReloadQRThread(split_objects(objects, 5), objName, font_size, box_size, border_size, force_reload_all))
