@@ -413,7 +413,7 @@ class ReloadQRThread(threading.Thread):
                 # Check if qrcode already exists
                 image_url = self.request.build_absolute_uri(
                     '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
-                rq = self.request.get(image_url)
+                rq = requests.get(image_url)
 
                 # Create QR Code only for non-existing or if forced
                 if rq.status_code != 200:
