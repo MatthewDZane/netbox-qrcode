@@ -388,7 +388,8 @@ class PrintView(View):
 
 
 class ReloadQRThread(threading.Thread):
-    def __init__(self, objects, object_name, font_size, box_size, border_size, force_reload_all):
+    def __init__(self, request, objects, object_name, font_size, box_size, border_size, force_reload_all):
+        self.request = request
         threading.Thread.__init__(self)
         self.objects = objects
         self.object_name = object_name
@@ -410,9 +411,9 @@ class ReloadQRThread(threading.Thread):
         else:
             for obj in self.objects:
                 # Check if qrcode already exists
-                image_url = request.build_absolute_uri(
+                image_url = self.request.build_absolute_uri(
                     '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
-                rq = requests.get(image_url)
+                rq = self.requests.get(image_url)
 
                 # Create QR Code only for non-existing or if forced
                 if rq.status_code != 200:
@@ -420,7 +421,7 @@ class ReloadQRThread(threading.Thread):
                     reload_qr_image(obj)
 
     def reload_qr_image(self, obj):
-        url = request.build_absolute_uri(
+        url = self.request.build_absolute_uri(
             '/') + 'dcim/{}/{}'.format(self.object_name, obj.pk)
 
         # Get object config settings
@@ -517,7 +518,7 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
 
     objects = list(Model.objects.all())
     force_reload_all = request.POST.get('force-reload-all')
-    threads.append(ReloadQRThread(split_objects(objects, 5), objName, font_size, box_size, border_size, force_reload_all))
+    threads.append(ReloadQRThread(split_objects(objects, 5), request, objName, font_size, box_size, border_size, force_reload_all))
 
     for thread in threads:
         thread.start()
