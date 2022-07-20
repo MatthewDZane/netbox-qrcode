@@ -530,6 +530,6 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
 
 def split_objects(objects, num_chunks):
     """Yield successive n-sized chunks from lst."""
-    chunk_size = objects / num_chunks
+    chunk_size = len(objects) / num_chunks
     for i in range(0, len(objects), chunk_size):
         yield objects[i:i + chunk_size]
