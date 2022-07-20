@@ -515,7 +515,7 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     threads = []
     numReloaded = 0
 
-    objects = Model.objects.all().iterator()
+    objects = list(Model.objects.all())
     force_reload_all = request.POST.get('force-reload-all')
     threads.append(ReloadQRThread(split_objects(objects, 5), objName, font_size, box_size, border_size, force_reload_all))
 
