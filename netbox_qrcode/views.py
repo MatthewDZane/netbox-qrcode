@@ -405,14 +405,14 @@ class ReloadQRThread(threading.Thread):
         thread_lock.release()
 
     def join(self):
-        Thread.join(self)
+        threading.Thread.join(self)
         return self.num_reloaded
 
     def reload_qr_images(self):
         if self.force_reload_all:
             for obj in self.objects:
                 self.num_reloaded += 1
-                reload_qr_image(obj)
+                self.reload_qr_image(obj)
         else:
             for obj in self.objects:
                 # Check if qrcode already exists
@@ -423,7 +423,7 @@ class ReloadQRThread(threading.Thread):
                 # Create QR Code only for non-existing
                 if rq.status_code != 200:
                     self.num_reloaded += 1
-                    reload_qr_image(obj)
+                    self.reload_qr_image(obj)
 
     def reload_qr_image(self, obj):
         url = self.request.build_absolute_uri(
