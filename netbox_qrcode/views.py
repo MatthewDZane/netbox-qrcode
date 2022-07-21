@@ -79,6 +79,49 @@ class QRcodeDeviceView(View):
             'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Devices</div>'.format(numReloaded),
         })
 
+    def patch(self, request):
+        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
+
+        # Find all current Devices and instantiates new models that provide links to photos
+        for device in Device.objects.all().iterator():
+
+            # Create device with resized url
+            url_resized = '{}resized{}.png'.format(base_url, device._meta.object_name + str(device.pk))
+            QRExtendedDevice.objects.update_or_create(
+                id=device.id,
+                defaults={
+                    "device": device,
+                    "name": device.name,
+                    "status": device.status,
+                    "device_type": device.device_type,
+                    "device_role": device.device_role,
+                    "site": device.site,
+                    "rack": device.rack,
+                    "photo": 'image-attachments/{}.png'.format(device._meta.object_name + str(device.pk)),
+                    "url": url_resized
+                },
+            )
+        
+                # Create QuerySets from extended models
+        queryset_device = QRExtendedDevice.objects.all()
+
+        # Filter QuerySets
+        queryset_device = self.filterset_device(
+            request.GET, queryset_device).qs
+
+        # Create Tables for each separate object's querysets
+        table_device = QRDeviceTables(queryset_device)
+
+        # Render html with context
+        return render(request, self.template_name, {
+            'table_device': table_device,
+            'filter_form': forms.SearchFilterFormDevice(
+                request.GET,
+                label_suffix=''
+            ),
+        })
+
+
 
 class QRcodeRackView(View):
     template_name = 'netbox_qrcode/racks.html'
