@@ -415,7 +415,7 @@ class ReloadQRThread(threading.Thread):
                     '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
                 rq = requests.get(image_url)
 
-                # Create QR Code only for non-existing or if forced
+                # Create QR Code only for non-existing
                 if rq.status_code != 200:
                     numReloaded += 1
                     reload_qr_image(obj)
@@ -511,11 +511,13 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     # Collect User Config and make copy
     config = settings.PLUGINS_CONFIG.get('netbox_qrcode', {}).copy()
 
+    global numReloaded
+    numReloaded = 0
+
     global thread_lock
     thread_lock = threading.Lock()
     threads = []
-    numReloaded = 0
-
+    
     objects = list(Model.objects.all())
     force_reload_all = request.POST.get('force-reload-all')
     chunks = split_objects(objects, 5)
