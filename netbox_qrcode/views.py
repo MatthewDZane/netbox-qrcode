@@ -388,7 +388,7 @@ class PrintView(View):
 
 
 class ReloadQRThread(threading.Thread):
-    def __init__(self, request, objects, object_name, font_size, box_size, border_size, force_reload_all):
+    def __init__(self, request, objects, object_name, font_size, box_size, border_size, force_reload_all, config):
         threading.Thread.__init__(self)
         self.request = request
         self.objects = objects
@@ -398,6 +398,7 @@ class ReloadQRThread(threading.Thread):
         self.border_size = border_size
         self.force_reload_all = force_reload_all
         self.num_reloaded = 0
+        self.config = config
 
     def run(self):
         thread_lock.acquire()
@@ -430,18 +431,18 @@ class ReloadQRThread(threading.Thread):
             '/') + 'dcim/{}/{}'.format(self.object_name, obj.pk)
 
         # Get object config settings
-        obj_cfg = config.get(self.object_name[:-1])
+        obj_cfg = self.config.get(self.object_name[:-1])
         if obj_cfg is None:
             return ''
         # and override default config
-        config.update(obj_cfg)
+        self.config.update(obj_cfg)
 
         # Override User Config with print settings
         printConfig = {}
         printConfig['qr_box_size'] = self.box_size
         printConfig['qr_border'] = self.border_size
 
-        config.update(printConfig)
+        self.config.update(printConfig)
 
         qr_args = {}
         for k, v in config.items():
@@ -452,9 +453,9 @@ class ReloadQRThread(threading.Thread):
         qr_img = get_qr(url, **qr_args)
 
         # Handle qr text if enabled
-        if config.get('with_text'):
+        if self.config.get('with_text'):
             text = []
-            for text_field in config.get('text_fields', []):
+            for text_field in self.config.get('text_fields', []):
                 cfn = None
                 if '.' in text_field:
                     try:
@@ -471,20 +472,20 @@ class ReloadQRThread(threading.Thread):
                             pass
                     else:
                         text.append('{}'.format(getattr(obj, text_field)))
-            custom_text = config.get('custom_text')
+            custom_text = self.config.get('custom_text')
             if custom_text:
                 text.append(custom_text)
             text = '\n'.join(text)
 
             # Create qr text with image size and text
             text_img = get_qr_text(
-                qr_img.size, text, config.get('font'), self.font_size)
+                qr_img.size, text, self.config.get('font'), self.font_size)
 
             # Combine qr image and qr text
             qr_with_text = get_concat(qr_img, text_img)
 
             # Save image with text to container with object's first field name
-            text_fields = config.get('text_fields', [])
+            text_fields = self.config.get('text_fields', [])
             file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(
                 obj._meta.object_name + str(obj.pk))
             qr_with_text.save(file_path)
@@ -527,7 +528,7 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     chunks = split_objects(objects, 5)
 
     for chunk in chunks:
-        threads.append(ReloadQRThread(request, chunk, objName, font_size, box_size, border_size, force_reload_all))
+        threads.append(ReloadQRThread(request, chunk, objName, font_size, box_size, border_size, force_reload_all, config))
 
     for thread in threads:
         thread.start()
