@@ -49,6 +49,20 @@
 
 </form>
 
+<!--Updating QR codes objects handled by patch request-->
+<form method="PATCH" class="col-md-3">
+  {% csrf_token %}
+
+  <!--Update Submit Button-->
+  <div style="margin-top: 10px">
+    <input class="btn btn-success btn-md" type="submit" name="update" value="Update QR Code Objects" />
+  </div>
+
+   <!--Display Success Message following successful Reload-->
+  {{ successMessage |safe }}
+
+</form>
+
 <!--Filter Functionality-->
 <div class="col-md-3 pull-right" style="padding-top: 50px">
   {% load form_helpers %}
