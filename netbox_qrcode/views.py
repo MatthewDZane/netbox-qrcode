@@ -17,6 +17,8 @@ from .utilities import *
 
 from django.conf import settings
 
+import threading
+
 
 class QRcodeDeviceView(View):
     template_name = 'netbox_qrcode/devices.html'
@@ -385,6 +387,124 @@ class PrintView(View):
             return redirect('/'.join(self.request.path_info.split('/')[:-2]))
 
 
+class ReloadQRThread(threading.Thread):
+    def __init__(self, request, objects, object_name, font_size, box_size, border_size, force_reload_all, config):
+        threading.Thread.__init__(self)
+        self.request = request
+        self.objects = objects
+        self.object_name = object_name
+        self.font_size = font_size
+        self.box_size = box_size
+        self.border_size = border_size
+        self.force_reload_all = force_reload_all
+        self.num_reloaded = 0
+        self.config = config
+
+    def run(self):
+        thread_lock.acquire()
+        self.reload_qr_images()
+        thread_lock.release()
+
+    def join(self):
+        threading.Thread.join(self)
+        return self.num_reloaded
+
+    def reload_qr_images(self):
+        if self.force_reload_all:
+            for obj in self.objects:
+                self.num_reloaded += 1
+                self.reload_qr_image(obj)
+        else:
+            for obj in self.objects:
+                # Check if qrcode already exists
+                image_url = self.request.build_absolute_uri(
+                    '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
+                rq = requests.get(image_url)
+
+                # Create QR Code only for non-existing
+                if rq.status_code != 200:
+                    self.num_reloaded += 1
+                    self.reload_qr_image(obj)
+
+    def reload_qr_image(self, obj):
+        url = self.request.build_absolute_uri(
+            '/') + 'dcim/{}/{}'.format(self.object_name, obj.pk)
+
+        # Get object config settings
+        obj_cfg = self.config.get(self.object_name[:-1])
+        if obj_cfg is None:
+            return ''
+        # and override default config
+        self.config.update(obj_cfg)
+
+        # Override User Config with print settings
+        printConfig = {}
+        printConfig['qr_box_size'] = self.box_size
+        printConfig['qr_border'] = self.border_size
+
+        self.config.update(printConfig)
+
+        qr_args = {}
+        for k, v in self.config.items():
+            if k.startswith('qr_'):
+                qr_args[k.replace('qr_', '')] = v
+
+        # Create qr image
+        qr_img = get_qr(url, **qr_args)
+
+        # Handle qr text if enabled
+        if self.config.get('with_text'):
+            text = []
+            for text_field in self.config.get('text_fields', []):
+                cfn = None
+                if '.' in text_field:
+                    try:
+                        text_field, cfn = text_field.split('.')
+                    except ValueError:
+                        cfn = None
+                if getattr(obj, text_field, None):
+                    if cfn:
+                        try:
+                            if getattr(obj, text_field).get(cfn):
+                                text.append('{}'.format(
+                                    getattr(obj, text_field).get(cfn)))
+                        except AttributeError:
+                            pass
+                    else:
+                        text.append('{}'.format(getattr(obj, text_field)))
+            custom_text = self.config.get('custom_text')
+            if custom_text:
+                text.append(custom_text)
+            text = '\n'.join(text)
+
+            # Create qr text with image size and text
+            text_img = get_qr_text(
+                qr_img.size, text, self.config.get('font'), self.font_size)
+
+            # Combine qr image and qr text
+            qr_with_text = get_concat(qr_img, text_img)
+
+            # Save image with text to container with object's first field name
+            text_fields = self.config.get('text_fields', [])
+            file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(
+                obj._meta.object_name + str(obj.pk))
+            qr_with_text.save(file_path)
+
+            # Save image without text to container
+            file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(
+                obj._meta.object_name + str(obj.pk))
+            resize_width_height = (90, 90)
+            qr_img = qr_img.resize(resize_width_height)
+            qr_img.save(file_path)
+
+            # Resize final image for thumbnails and save
+            resize_width_height = (120, 50)
+            qr_with_text = qr_with_text.resize(resize_width_height)
+            file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(
+                obj._meta.object_name + str(obj.pk))
+            qr_with_text.save(file_path)
+
+
 def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_size=0):
     """
     Creates QRcode image with text, without text, and thumbsized for netbox objects and saves to disk 
@@ -398,92 +518,29 @@ def reloadQRImages(request, Model, objName, font_size=100, box_size=3, border_si
     config = settings.PLUGINS_CONFIG.get('netbox_qrcode', {}).copy()
 
     numReloaded = 0
-    for obj in Model.objects.all().iterator():
 
-        # Check if qrcode already exists
-        image_url = request.build_absolute_uri(
-            '/') + 'media/image-attachments/{}.png'.format(obj._meta.object_name + str(obj.pk))
-        rq = requests.get(image_url)
+    global thread_lock
+    thread_lock = threading.Lock()
+    threads = []
 
-        # Create QR Code only for non-existing or if forced
-        if rq.status_code != 200 or request.POST.get('force-reload-all'):
-            numReloaded += 1
+    objects = list(Model.objects.all())
+    force_reload_all = request.POST.get('force-reload-all')
+    chunks = split_objects(objects, 5)
 
-            url = request.build_absolute_uri(
-                '/') + 'dcim/{}/{}'.format(objName, obj.pk)
+    for chunk in chunks:
+        threads.append(ReloadQRThread(request, chunk, objName, font_size, box_size, border_size, force_reload_all, config))
 
-            # Get object config settings
-            obj_cfg = config.get(objName[:-1])
-            if obj_cfg is None:
-                return ''
-            # and override default config
-            config.update(obj_cfg)
+    for thread in threads:
+        thread.start()
 
-            # Override User Config with print settings
-            printConfig = {}
-            printConfig['qr_box_size'] = box_size
-            printConfig['qr_border'] = border_size
-
-            config.update(printConfig)
-
-            qr_args = {}
-            for k, v in config.items():
-                if k.startswith('qr_'):
-                    qr_args[k.replace('qr_', '')] = v
-
-            # Create qr image
-            qr_img = get_qr(url, **qr_args)
-
-            # Handle qr text if enabled
-            if config.get('with_text'):
-                text = []
-                for text_field in config.get('text_fields', []):
-                    cfn = None
-                    if '.' in text_field:
-                        try:
-                            text_field, cfn = text_field.split('.')
-                        except ValueError:
-                            cfn = None
-                    if getattr(obj, text_field, None):
-                        if cfn:
-                            try:
-                                if getattr(obj, text_field).get(cfn):
-                                    text.append('{}'.format(
-                                        getattr(obj, text_field).get(cfn)))
-                            except AttributeError:
-                                pass
-                        else:
-                            text.append('{}'.format(getattr(obj, text_field)))
-                custom_text = config.get('custom_text')
-                if custom_text:
-                    text.append(custom_text)
-                text = '\n'.join(text)
-
-                # Create qr text with image size and text
-                text_img = get_qr_text(
-                    qr_img.size, text, config.get('font'), font_size)
-
-                # Combine qr image and qr text
-                qr_with_text = get_concat(qr_img, text_img)
-
-                # Save image with text to container with object's first field name
-                text_fields = config.get('text_fields', [])
-                file_path = '/opt/netbox/netbox/media/image-attachments/{}.png'.format(
-                    obj._meta.object_name + str(obj.pk))
-                qr_with_text.save(file_path)
-
-                # Save image without text to container
-                file_path = '/opt/netbox/netbox/media/image-attachments/noText{}.png'.format(
-                    obj._meta.object_name + str(obj.pk))
-                resize_width_height = (90, 90)
-                qr_img = qr_img.resize(resize_width_height)
-                qr_img.save(file_path)
-
-                # Resize final image for thumbnails and save
-                resize_width_height = (120, 50)
-                qr_with_text = qr_with_text.resize(resize_width_height)
-                file_path = '/opt/netbox/netbox/media/image-attachments/resized{}.png'.format(
-                    obj._meta.object_name + str(obj.pk))
-                qr_with_text.save(file_path)
+    for thread in threads:
+        numReloaded += thread.join()
 
     return numReloaded
+
+
+def split_objects(objects, num_chunks):
+    """Yield successive n-sized chunks from lst."""
+    chunk_size = len(objects) // num_chunks
+    for i in range(0, len(objects), chunk_size):
+        yield objects[i:i + chunk_size]
