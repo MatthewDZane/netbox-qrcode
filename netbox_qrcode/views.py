@@ -445,7 +445,7 @@ class ReloadQRThread(threading.Thread):
         self.config.update(printConfig)
 
         qr_args = {}
-        for k, v in config.items():
+        for k, v in self.config.items():
             if k.startswith('qr_'):
                 qr_args[k.replace('qr_', '')] = v
 
