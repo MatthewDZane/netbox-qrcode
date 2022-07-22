@@ -102,7 +102,7 @@ class QRcodeDeviceView(View):
                 },
             )
         
-                # Create QuerySets from extended models
+        # Create QuerySets from extended models
         queryset_device = QRExtendedDevice.objects.all()
 
         # Filter QuerySets
@@ -120,7 +120,6 @@ class QRcodeDeviceView(View):
                 label_suffix=''
             ),
         })
-
 
 
 class QRcodeRackView(View):
@@ -201,6 +200,47 @@ class QRcodeRackView(View):
             'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Racks</div>'.format(numReloaded),
         })
 
+    def patch(self, request):
+        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
+
+        # Find all current Racks and instantiates new models that provide links to photos
+        for rack in Rack.objects.all().iterator():
+            # Create rack with resized url
+            url_resized = '{}resized{}.png'.format(base_url, rack._meta.object_name + str(rack.pk))
+            QRExtendedRack.objects.update_or_create(
+                id=rack.id,
+                defaults={
+                    "rack": rack,
+                    "name": rack.name,
+                    "status": rack.status,
+                    "site": rack.site,
+                    "role": rack.role,
+                    "photo": 'image-attachments/{}.png'.format(rack._meta.object_name + str(rack.pk)),
+                    "url": url_resized
+                }
+            )
+
+        # Create QuerySets from extended models
+        queryset_rack = QRExtendedRack.objects.all()
+
+        # Filter QuerySets
+        queryset_rack = self.filterset_rack(request.GET, queryset_rack).qs
+
+        # Create Tables for each separate object's querysets
+        table_rack = QRRackTables(queryset_rack)
+
+        # Paginate Tables
+        RequestConfig(request, paginate={"per_page": 50}).configure(table_rack)
+
+        # Render html with context
+        return render(request, self.template_name, {
+            'table_rack': table_rack,
+            'filter_form': forms.SearchFilterFormRack(
+                request.GET,
+                label_suffix=''
+            ),
+        })
+
 
 class QRcodeCableView(View):
     template_name = 'netbox_qrcode/cables.html'
@@ -278,6 +318,45 @@ class QRcodeCableView(View):
                 label_suffix=''
             ),
             'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Cables</div>'.format(numReloaded),
+        })
+
+    def patch(self, request):
+        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
+
+        # Find all current Cables and instantiates new models that provide links to photos
+        for cable in Cable.objects.all().iterator():
+            # Create cable with resized url
+            url_resized = '{}resized{}.png'.format(base_url, cable._meta.object_name + str(cable.pk))
+            QRExtendedCable.objects.update_or_create(
+                id=cable.id,
+                defaults={
+                    "cable": cable,
+                    "name": cable._meta.object_name + str(cable.pk),
+                    "photo": 'image-attachments/{}.png'.format(cable._meta.object_name + str(cable.pk)),
+                    "url": url_resized
+                }
+            )
+
+        # Create QuerySets from extended models
+        queryset_cable = QRExtendedCable.objects.all()
+
+        # Filter QuerySets
+        queryset_cable = self.filterset_cable(request.GET, queryset_cable).qs
+
+        # Create Tables for each separate object's querysets
+        table_cable = QRCableTables(queryset_cable)
+
+        # Paginate Tables
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_cable)
+
+        # Render html with context
+        return render(request, self.template_name, {
+            'table_cable': table_cable,
+            'filter_form': forms.SearchFilterFormCable(
+                request.GET,
+                label_suffix=''
+            ),
         })
 
 
