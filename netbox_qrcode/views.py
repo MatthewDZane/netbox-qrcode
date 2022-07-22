@@ -127,27 +127,6 @@ class QRcodeRackView(View):
     filterset_rack = filters.SearchRackFilterSet
 
     def get(self, request):
-        # Clear all objects in case of duplicate key violation
-        QRExtendedRack.objects.all().delete()
-
-        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
-
-        # Find all current Racks and instantiates new models that provide links to photos
-        for rack in Rack.objects.all().iterator():
-
-            # Create rack with resized url
-            url_resized = '{}resized{}.png'.format(base_url, rack._meta.object_name + str(rack.pk))
-            QRExtendedRack.objects.get_or_create(
-                id=rack.id,
-                rack=rack,
-                name=rack.name,
-                status=rack.status,
-                site=rack.site,
-                role=rack.role,
-                photo='image-attachments/{}.png'.format(rack._meta.object_name + str(rack.pk)),
-                url=url_resized
-            )
-
         # Create QuerySets from extended models
         queryset_rack = QRExtendedRack.objects.all()
 
@@ -247,24 +226,6 @@ class QRcodeCableView(View):
     filterset_cable = filters.SearchCableFilterSet
 
     def get(self, request):
-        # Clear all objects in case of duplicate key violation
-        QRExtendedCable.objects.all().delete()
-
-        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
-
-        # Find all current Cables and instantiates new models that provide links to photos
-        for cable in Cable.objects.all().iterator():
-
-            # Create cable with resized url
-            url_resized = '{}resized{}.png'.format(base_url, cable._meta.object_name + str(cable.pk))
-            QRExtendedCable.objects.get_or_create(
-                id=cable.id,
-                cable=cable,
-                name=cable._meta.object_name + str(cable.pk),
-                photo='image-attachments/{}.png'.format(cable._meta.object_name + str(cable.pk)),
-                url=url_resized
-            )
-
         # Create QuerySets from extended models
         queryset_cable = QRExtendedCable.objects.all()
 
