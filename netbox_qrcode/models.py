@@ -2,7 +2,7 @@
 from django.db import models
 from django.urls import reverse
 
-from dcim.choices import DeviceStatusChoices, RackStatusChoices, LinkStatusChoices
+from dcim.choices import DeviceStatusChoices, RackStatusChoices, LinkStatusChoices, LocationStatusChoices
 from ipam.choices import *
 
 
@@ -127,6 +127,26 @@ class QRExtendedCable(QRObject):
 
     def get_absolute_url(self):
         return reverse('dcim:cable', args=[self.cable.pk])
+
+    def get_status_class(self):
+        return LinkStatusChoices.CSS_CLASSES.get(self.status)
+
+
+class QRExtendedLocation(QRObject):
+    """
+    Locations Wrapper
+    """
+    location = models.ForeignKey(
+        to="dcim.Location", on_delete=models.CASCADE, null=True
+    )
+    name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    def get_absolute_url(self):
+        return reverse('dcim:location', args=[self.cable.pk])
 
     def get_status_class(self):
         return LinkStatusChoices.CSS_CLASSES.get(self.status)

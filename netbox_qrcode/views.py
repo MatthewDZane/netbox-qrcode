@@ -4,13 +4,13 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django_tables2 import RequestConfig
 
-from dcim.models import Device, Rack, Cable
-from dcim.tables import DeviceTable, RackTable, CableTable
+from dcim.models import Device, Rack, Cable, Location
+from dcim.tables import DeviceTable, RackTable, CableTable, LocationTable
 
 from . import forms, filters
 
-from .tables import QRDeviceTables, QRRackTables, QRCableTables
-from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
+from .tables import QRDeviceTables, QRRackTables, QRCableTables, QRLocationTables
+from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable, QRExtendedLocation
 
 from PIL import Image
 from .utilities import *
@@ -255,6 +255,83 @@ class QRcodeCableView(View):
         })
 
 
+class QRcodeLocationView(View):
+    template_name = 'netbox_qrcode/locations.html'
+    filterset_cable = filters.SearchCableFilterSet
+
+    def get(self, request):
+        # Create QuerySets from extended models
+        queryset_location = QRExtendedLocation.objects.all()
+
+        # Filter QuerySets
+        queryset_location = self.filterset_cable(request.GET, queryset_location).qs
+
+        # Create Tables for each separate object's querysets
+        table_location = QRLocationTables(queryset_location)
+
+        # Paginate Tables
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_location)
+
+        # Render html with context
+        return render(request, self.template_name, {
+            'table_location': table_location,
+            'filter_form': forms.SearchFilterFormLocation(
+                request.GET,
+                label_suffix=''
+            ),
+        })
+
+    def post(self, request):
+        base_url = request.build_absolute_uri('/') + 'media/image-attachments/'
+
+        # Find all current Cables and instantiates new models that provide links to photos
+        for location in Location.objects.all().iterator():
+            # Create cable with resized url
+            url_resized = '{}resized{}.png'.format(base_url, location._meta.object_name + str(location.pk))
+            QRExtendedLocation.objects.update_or_create(
+                id=location.id,
+                defaults={
+                    "location": location,
+                    "name": location._meta.object_name + str(location.pk),
+                    "photo": 'image-attachments/{}.png'.format(location._meta.object_name + str(location.pk)),
+                    "url": url_resized
+                }
+            )
+
+        # Get slider values
+        font_size = request.POST.get('font-size-range')
+        box_size = request.POST.get('box-size-range')
+        border_size = request.POST.get('border-size-range')
+
+        # Reload all Object QR Images
+        numReloaded = reloadQRImages(request, Location, "locations", int(
+            font_size), int(box_size), int(border_size))
+
+        # Create QuerySets from extended models
+        queryset_location = QRExtendedLocation.objects.all()
+
+        # Filter QuerySets
+        queryset_location = self.filterset_location(request.GET, queryset_location).qs
+
+        # Create Tables for each separate object's querysets
+        table_location = QRCableTables(queryset_location)
+
+        # Paginate Tables
+        RequestConfig(request, paginate={
+                      "per_page": 50}).configure(table_location)
+
+        # Render html with context
+        return render(request, self.template_name, {
+            'table_location': table_location,
+            'filter_form': forms.SearchFilterFormLocation(
+                request.GET,
+                label_suffix=''
+            ),
+            'successMessage': '<div class="text-center text-success" style="padding-top: 10px">Successfully Reloaded {} Location</div>'.format(numReloaded),
+        })
+
+
 # View for when 'Print Selected' Button Pressed
 class PrintView(View):
 
@@ -276,7 +353,9 @@ class PrintView(View):
 
         # Switch table based on object type
         table_dict = {"Devices": DeviceTable,
-                      "Racks": RackTable, "Cables": CableTable}
+                      "Racks": RackTable, 
+                      "Cables": CableTable,
+                      "Locations": LocationTable}
         object_queryset = Model.objects.filter(pk__in=pk_list)
         context['table'] = table_dict[name](object_queryset)
 

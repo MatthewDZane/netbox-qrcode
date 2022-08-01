@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from netbox.tables import BaseTable, columns
-from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
+from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable, QRExtendedLocation
 
 # Device Table
 class QRDeviceTables(BaseTable):
@@ -77,6 +77,29 @@ class QRCableTables(BaseTable):
         fields = (
             "pk",
             "cable",
+            "id",
+            "photo",
+            "url",
+        )
+
+
+# Location Table
+class QRLocationTables(BaseTable):
+    """Table for displaying Location objects."""
+
+    # Set up hyperlinks to column items
+    pk = columns.ToggleColumn(visible=True)
+    location = tables.LinkColumn()
+    # status = columns.ChoiceFieldColumn()
+    id = tables.LinkColumn()
+    url = tables.TemplateColumn('<img src="{{record.url}}"> ', verbose_name = 'QR Code')
+
+    # Netbox base table class, fields display column names/order
+    class Meta(BaseTable.Meta):
+        model = QRExtendedLocation
+        fields = (
+            "pk",
+            "location",
             "id",
             "photo",
             "url",
