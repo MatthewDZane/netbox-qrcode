@@ -6,12 +6,6 @@
 <!--Div to hold table and search components-->
 <div class="row">
   <div class="col-md-12">
-    <!--Direct to Rack page-->
-    <div class="text-left">
-      <a class="btn btn-primary" href="/plugins/netbox_qrcode/devices">Devices</a>
-      <a class="btn btn-primary" href="/plugins/netbox_qrcode/racks">Racks</a>
-      <a class="btn btn-primary" href="/plugins/netbox_qrcode/cables">Cables</a>
-    </div>
     <!--Div to hold all table components-->
     <div class="col-md-9">
       <!--POST form for checkbox submission-->
@@ -32,6 +26,44 @@
               <label for="text-device">Print without text</label>
               <span aria-hidden="true"></span>
             </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!--Font Size Settings-->
+          <div style="width: 400px; margin-top: 10px">
+            <label class="label label-primary" for="font-size-range" id="font-size-display">Font Size</label>
+            <span><input type="range" class="form-range" style="margin-top: 10px;" id="font-size-range" name="font-size-range"
+                min="1" max="200" value=100 /></span>
+          </div>
+
+          <!--QR Size Settings-->
+          <div style="width: 400px; margin-top: 10px">
+            <label class="label label-primary" for="box-size-range" id="box-size-display">Box Size</label>
+            <input type="range" class="form-range" style="margin-top: 10px;" id="box-size-range" name="box-size-range" min="1"
+              max="30" value=3 />
+          </div>
+
+          <!--Border Size Settings-->
+          <div style="width: 400px; margin-top: 10px">
+            <label class="label label-primary" for="border-size-range" id="border-size-display">Border Size</label>
+            <input type="range" class="form-range" style="margin-top: 10px" id="border-size-range" name="border-size-range"
+              min="" max="10" value=0 />
+          </div>
+
+          <!--Max Line Length Settings-->
+          <div style="width: 400px; margin-top: 10px">
+            <label class="label label-primary" for="max-line-length-range" id="max-line-length-display">Max Line Length</label>
+            <input type="range" class="form-range" style="margin-top: 10px" id="max-line-length-range" name="max-line-length-range"
+              min="1" max="50" value=20 />
+          </div>
+
+          <!--Reload Submit Button-->
+          <div style="margin-top: 10px">
+            <input class="btn btn-success btn-md" type="submit" name="reload" value="Reload QR Codes" formaction=""/>
+            <!--Force Reload Checkbox-->
+            <input class="form-check-input" type="checkbox" id="force-reload-all" name="force-reload-all" value=1 />
+            <label class="form-check-label" for="force-reload-all">Force reload all</label>
           </div>
         </div>
 

@@ -10,77 +10,146 @@
     window.history.replaceState(null, null, window.location.href);
   }
 </script>
-{% block qr_menu_content %}{% endblock %}
 
-<!--Reloading QR codes handled by post request-->
-<form method="POST" class="col-md-3">
-  {% csrf_token %}
-  <!--Font Size Settings-->
-  <div style="width: 400px; margin-top: 10px">
-    <label class="label label-primary" for="font-size-range" id="font-display">Font Size</label>
-    <span><input type="range" class="form-range" style="margin-top: 10px;" id="font-size-range" name="font-size-range"
-        min="1" max="200" value=100 /></span>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #3D4044;
+  background-color: #1B1F22;
+  color:#F8F9FA
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  color:#F8F9FA;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #48555c;
+  color:#F8F9FA;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #48555c;
+  color:#F8F9FA;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #3D4044;
+  border-top: none;
+}
+</style>
+</head>
+<body onload="document.getElementById('Results').click();document.getElementById(tabName).style.display = 'block'">
+
+  <!--Direct to other pages page-->
+  <div class="text-left">
+    <a class="btn btn-primary" href="/plugins/netbox_qrcode/devices">Devices</a>
+    <a class="btn btn-primary" href="/plugins/netbox_qrcode/racks">Racks</a>
+    <a class="btn btn-primary" href="/plugins/netbox_qrcode/cables">Cables</a>
+    <a class="btn btn-primary" href="/plugins/netbox_qrcode/locations">Locations</a>
   </div>
+  <div style="padding-bottom: 20px"></div>
 
-  <!--QR Size Settings-->
-  <div style="width: 400px; margin-top: 10px">
-    <label class="label label-primary" for="box-size-range" id="box-display">Box Size</label>
-    <input type="range" class="form-range" style="margin-top: 10px;" id="box-size-range" name="box-size-range" min="1"
-      max="10" value=3 />
-  </div>
+<!--Handle Tabs Functionality-->
+<script type="text/javascript">
+  function openTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
 
-  <!--Border Size Settings-->
-  <div style="width: 400px; margin-top: 10px">
-    <label class="label label-primary" for="border-size-range" id="border-display">Border Size</label>
-    <input type="range" class="form-range" style="margin-top: 10px" id="border-size-range" name="border-size-range"
-      min="" max="10" value=0 />
-  </div>
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
 
-  <!--Reload Submit Button-->
-  <div style="margin-top: 10px">
-    <input class="btn btn-success btn-md" type="submit" name="reload" value="Reload QR Codes" />
-    <!--Force Reload Checkbox-->
-    <input class="form-check-input" type="checkbox" id="force-reload-all" name="force-reload-all" value=1 />
-    <label class="form-check-label" for="force-reload-all">Force reload all</label>
-  </div>
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
 
-  <!--Display Success Message following successful Reload-->
-  {{ successMessage |safe }}
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+</script>
 
-</form>
-
-<!--Filter Functionality-->
-<div class="col-md-3 pull-right" style="padding-top: 50px">
-  {% load form_helpers %}
-  {% include 'inc/filter_list.html' %}
-  <div style="padding-bottom: 100px"></div>
+<!-- Tab links -->
+<div class="tab">
+  <button class="tablinks active" onclick="openTab(event, 'Results')">Results</button>
+  <button class="tablinks" onclick="openTab(event, 'Filters')">Filters</button>
 </div>
+
+<!-- Tab content -->
+<div id="Filters" class="tabcontent">
+  <!--Filter Functionality-->
+  <div class="col-md-3 pull-right" style="padding-top: 50px">
+    {% load form_helpers %}
+    {% include 'inc/filter_list.html' %}
+  </div>
 </div>
+
+<div id="Results" class="tabcontent" style="display: block;"">
+  {% block qr_menu_content %}{% endblock %}
+
+  <form method="POST" class="col-md-3">
+    {% csrf_token %}
+    <!--Reload Objects Button-->
+    <div style="margin-top: 10px">
+      <input class="btn btn-success btn-md" type="submit" name="reload-objects" value="Reload Objects" />
+    </div>
+  </form>
 </div>
 
 <!--Handle Slider Input Values-->
 <script>
-  let fontValue = document.getElementById("font-size-range")
-  let boxValue = document.getElementById("box-size-range")
-  let borderValue = document.getElementById("border-size-range")
+  let fontSizeValue = document.getElementById("font-size-range")
+  let boxSizeValue = document.getElementById("box-size-range")
+  let borderSizeValue = document.getElementById("border-size-range")
+  let maxLineLengthValue = document.getElementById("max-line-length-range")
 
-  let fontDisplay = document.getElementById("font-display")
-  let boxDisplay = document.getElementById("box-display")
-  let borderDisplay = document.getElementById("border-display")
+  let fontSizeDisplay = document.getElementById("font-size-display")
+  let boxSizeDisplay = document.getElementById("box-size-display")
+  let borderSizeDisplay = document.getElementById("border-size-display")
+  let maxLineLengthDisplay = document.getElementById("max-line-length-display")
 
-  fontDisplay.innerHTML = "Font Size: " + fontValue.value
-  boxDisplay.innerHTML = "Box Size: " + boxValue.value
-  borderDisplay.innerHTML = "Border Size: " + borderValue.value
+  fontSizeDisplay.innerHTML = "Font Size: " + fontSizeValue.value
+  boxSizeDisplay.innerHTML = "Box Size: " + boxSizeValue.value
+  borderSizeDisplay.innerHTML = "Border Size: " + borderSizeValue.value
+  maxLineLengthDisplay.innerHTML = "Max Line Length: " + maxLineLengthValue.value
 
-  fontValue.oninput = function () {
-    fontDisplay.innerHTML = "Font Size: " + this.value;
+  fontSizeValue.oninput = function () {
+    fontSizeDisplay.innerHTML = "Font Size: " + this.value;
   }
-  boxValue.oninput = function () {
-    boxDisplay.innerHTML = "Box Size: " + this.value;
+  boxSizeValue.oninput = function () {
+    boxSizeDisplay.innerHTML = "Box Size: " + this.value;
   }
-  borderValue.oninput = function () {
-    borderDisplay.innerHTML = "Border Size: " + this.value;
+  borderSizeValue.oninput = function () {
+    borderSizeDisplay.innerHTML = "Border Size: " + this.value;
+  }
+  maxLineLengthValue.oninput = function () {
+    maxLineLengthDisplay.innerHTML = "Max Line Length: " + this.value;
   }
 </script>
 
 {% endblock %}
+</body>

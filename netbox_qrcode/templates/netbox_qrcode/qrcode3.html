@@ -1,8 +1,22 @@
 <script type="text/javascript">
     function printImg(source) {
-        var win = window.open('');
-        win.document.write('<img src="' + source + '" onload="window.print();window.close()" />');
+        var win = window.open("");
+        let printCSS;
+        printCSS = 
+        `
+        <style>
+            @page {
+            margin: 7.5mm 4.7625mm 0mm 15.7625mm
+            }
+        </style>
+        `
+        win.document.write(printCSS)
+
+        win.document.write('<div style="text-align: left; height:0;"><img src="' + source + '" onload="window.print();" /></div>');
+
+        win.document.close();
         win.focus();
+        win.print();
     }
 </script>
 <div class="card">
@@ -10,11 +24,12 @@
         QR Code
     </h5>
     <div class="card-body text-right noprint">
-        <img src="data:image/png;base64,{{image}}" />
+        <img src="{{image}}" />
     </div>
     <div class="card-footer text-end noprint">
-        <button onclick="printImg('data:image/png;base64,{{image}}')" ; class="btn btn-xs btn-primary">
-            <span class="mdi mdi-printer" aria-hidden="true"></span> Print
+        <button onclick="printImg('{{image}}')" ; class="btn btn-xs btn-primary">
+            <span class="glyphicon glyphicon-print" aria-hidden="true"></span> 
+            Print
         </button>
     </div>
 </div>

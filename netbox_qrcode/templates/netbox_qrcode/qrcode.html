@@ -1,10 +1,12 @@
 <script type="text/javascript">
   function printImg(source) {
-    var win = window.open("");
+    var win = window.open('');
     win.document.write(
       '<img src="' + source + '" onload="window.print();window.close()" />'
     );
+    win.document.close();
     win.focus();
+    win.print();
   }
 </script>
 <div class="panel panel-default">
