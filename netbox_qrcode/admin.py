@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable
+from .models import QRExtendedDevice, QRExtendedRack, QRExtendedCable, QRExtendedLocation
 
 @admin.register(QRExtendedDevice)
 class QRExtendedDeviceAdmin(admin.ModelAdmin):
@@ -12,3 +12,7 @@ class QRExtendedRackAdmin(admin.ModelAdmin):
 @admin.register(QRExtendedCable)
 class QRExtendedCableAdmin(admin.ModelAdmin):
     list_display = ("cable", "photo")
+
+@admin.register(QRExtendedLocation)
+class QRExtendedLocationAdmin(admin.ModelAdmin):
+    list_display = ("location", "photo")
