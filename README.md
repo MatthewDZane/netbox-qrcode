@@ -6,6 +6,32 @@ Created by Jason Lin and Maintained by [Matthew Zane](https://github.com/Matthew
 
 This plugin depends on [qrcode](https://github.com/lincolnloop/python-qrcode) and [Pillow](https://github.com/python-pillow/Pillow) python library
 
+# Table of Contents
+- [Compatibility](#compatibility)
+- [Installation](#installation)
+- [Configuration](#configuration)
+    - [Per Object Options](#per-object-options)
+    - [Pages](#pages)
+- [Views](#views)
+    - [Model Views](#model-views)
+    - [Get](#get)
+    - [Post](#post)
+    - [Print View](#print-view)
+- [How to use](#how-to-use)
+    - [Update Plugin Objects](#update-plugin-objects)
+    - [Generating QR Codes](#generating-qr-codes)
+    - [Printing QR Codes](#printing-qr-codes)
+    - [Reload QR Thread](#reload-qr-thread)
+- [Models](#models)
+    - [Adding New Models](#adding-new-models)
+    - [Making Migrations](#making-migrations)
+- [Tables, Forms, and Filters](#tables-forms-and-filters)
+    - [Tables](#tables)
+    - [Forms](#forms)
+    - [Filtersets](#filtersets)
+- [Contributing](#contributing)
+- [Screenshots](#screenshots)
+
 ## Compatibility
 
 This plugin in compatible with [NetBox](https://netbox.readthedocs.org/) 3.10 and later.
@@ -21,7 +47,7 @@ pip install netbox-qrcode
 To install this specific version:
 1) Clone this repo
 ```
-git clone https://gitlab.nrp-nautilus.io/nrp/netbox-qrcode.git
+git clone git@github.com:MatthewDZane/netbox-qrcode.git
 ```
 2) Move into the NetBox QRCode directory
 ```
