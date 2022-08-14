@@ -12,16 +12,30 @@ This plugin in compatible with [NetBox](https://netbox.readthedocs.org/) 3.10 an
 
 ## Installation
 
-The plugin is available as a Python package in pypi and can be installed with pip
+The plugin is available as a Python package in pypi and can be installed with pip. However this version will only install version 0.0.7.
 
 ```
 pip install netbox-qrcode
 ```
-Enable the plugin in /opt/netbox/netbox/netbox/configuration.py:
+
+To install this specific version:
+1) Clone this repo
+```
+git clone https://gitlab.nrp-nautilus.io/nrp/netbox-qrcode.git
+```
+2) Move into the NetBox QRCode directory
+```
+cd netbox-qrcode
+```
+3) Install the NetBox QR Code plugin
+```
+pip3 install --upgrade --no-deps --force-reinstall . 
+```
+4) Enable the plugin in netbox/netbox/netbox/configuration.py:
 ```
 PLUGINS = ['netbox_qrcode']
 ```
-Restart NetBox and add `netbox-qrcode` to your local_requirements.txt
+5) Restart NetBox and add `netbox-qrcode` to your local_requirements.txt
 
 ## Configuration
 
